@@ -1,0 +1,14 @@
+{
+  "name": "kkp-donustur",
+  "version": "0.1.0",
+  "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir",
+  "author": {
+    "name": "Kitappta"
+  },
+  "keywords": [
+    "kitappta",
+    "kkp",
+    "kitap",
+    "dönüşüm"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "kitappta-kit",
+  "description": "Kitappta yapay zekâ kitleri: hazır HTML kitabı kkp/1 paketine kayıpsız çevirme (kkp-donustur)",
+  "owner": {
+    "name": "Kitappta"
+  },
+  "plugins": [
+    {
+      "name": "kkp-donustur",
+      "source": "./plugins/kkp-donustur",
+      "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir (envanter → onay → pişirme → dönüşüm → kkp-lint → kanıt → zip)",
+      "version": "0.1.0"
+    }
+  ]
+}

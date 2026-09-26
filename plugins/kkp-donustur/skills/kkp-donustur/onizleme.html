@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kkp/1 Yerel Önizleme</title>
+<!--
+  Kitappta kkp/1 yerel önizleme — hoca kitinin parçası, PAKETE GİRMEZ.
+  Ne yapar: üretilen paketi (.zip ya da açılmış klasör) tarayıcıda, sunucusuz, baştan sona okutur:
+  içindekiler, bölüm gezintisi, açık/koyu tema, paketin kendi CSS/JS'i, sorun listesi.
+  Kitappta okuyucusunun sade bir taklididir: gerçek görünüm, not alma ve arama platformdadır.
+  Çalışma: dosyalar tarayıcıda okunur, hiçbir yere gönderilmez. Zip için tarayıcının DecompressionStream desteği gerekir
+  (Chrome 80+, Edge, Safari 16.4+, Firefox 113+); yoksa klasör seçilir.
+-->
+<style>
+  :root { --bg:#ffffff; --fg:#0b1e43; --muted:#5e6d88; --surface:#f7f9fd; --border:#dce5f3; --accent:#0b66f6; }
+  body.koyu { --bg:#0b1220; --fg:#e6edf8; --muted:#9aa8c2; --surface:#111a2d; --border:#24304a; --accent:#6aa6ff; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: 300px 1fr; grid-template-areas: "ust ust" "sol ana" "alt alt"; }
+  header { grid-area: ust; display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  header .baslik { flex: 1; min-width: 0; }
+  header .baslik strong { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  header .baslik span { color: var(--muted); font-size: 12px; }
+  .gezinti { display: flex; align-items: center; gap: 6px; }
+  .gezinti span { min-width: 110px; text-align: center; font-weight: 600; }
+  button, label.dugme { font: inherit; border: 1px solid var(--border); background: var(--bg); color: var(--fg); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  button:hover, label.dugme:hover { border-color: var(--accent); color: var(--accent); }
+  button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  label.dugme input { display: none; }
+  aside { grid-area: sol; overflow: auto; border-right: 1px solid var(--border); padding: 12px 8px 24px; }
+  aside h2 { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 6px 10px 10px; }
+  aside ul { list-style: none; margin: 0; padding: 0; }
+  aside ul ul { padding-left: 14px; }
+  aside li button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 5px 10px; border-radius: 6px; font-size: 13px; line-height: 1.35; }
+  aside li button.aktif { background: var(--surface); color: var(--accent); font-weight: 600; }
+  aside .bolum > button { font-weight: 600; }
+  main { grid-area: ana; min-width: 0; min-height: 0; background: var(--bg); position: relative; }
+  iframe { width: 100%; height: 100%; border: 0; background: var(--bg); }
+  .bos { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--muted); padding: 24px; }
+  .bos[hidden] { display: none; }
+  .bos div { max-width: 46ch; }
+  .bos strong { color: var(--fg); font-size: 18px; display: block; margin-bottom: 8px; }
+  .bos.surukle { outline: 3px dashed var(--accent); outline-offset: -16px; }
+  footer { grid-area: alt; border-top: 1px solid var(--border); background: var(--surface); padding: 8px 16px; max-height: 160px; overflow: auto; font-size: 12.5px; }
+  footer b { color: var(--muted); font-weight: 600; margin-right: 8px; }
+  footer .sonraki { float: right; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  footer ul { margin: 4px 0 0; padding-left: 18px; }
+  footer li.hata { color: #b42318; }
+  body.koyu footer li.hata { color: #ff9e8a; }
+  @media (max-width: 800px) { body { grid-template-columns: 1fr; grid-template-areas: "ust" "ana" "alt"; } aside { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="baslik"><strong id="kitapAd">kkp/1 yerel önizleme</strong><span id="altBilgi">Paket seçilmedi</span></div>
+  <div class="gezinti"><button id="onceki" disabled title="Önceki bölüm (←)">‹</button><span id="bolumNo">–</span><button id="sonraki" disabled title="Sonraki bölüm (→)">›</button></div>
+  <div class="tema"><button data-tema="acik" aria-pressed="true">Açık</button> <button data-tema="koyu" aria-pressed="false">Koyu</button></div>
+  <label class="dugme">Zip seç<input type="file" id="zipSec" accept=".zip,application/zip"></label>
+  <label class="dugme">Klasör seç<input type="file" id="klasorSec" webkitdirectory multiple></label>
+</header>
+<aside><h2>İçindekiler</h2><ul id="icindekiler"></ul></aside>
+<main>
+  <iframe id="cerceve" sandbox="allow-scripts allow-forms allow-modals" title="Bölüm"></iframe>
+  <div class="bos" id="bos"><div><strong>Paketi buraya bırak</strong>Üretilen kkp/1 paketini (.zip) sürükleyip bırak ya da sağ üstten seç. Dosyalar yalnız bu tarayıcıda okunur, hiçbir yere gönderilmez.</div></div>
+</main>
+<footer><b>Sorunlar</b><span id="sorunOzet">—</span><span id="sonrakiId" class="sonraki"></span><ul id="sorunlar"></ul></footer>
+
+<script>
+(function () {
+  "use strict";
+  var TEMALAR = {
+    acik: { "--kt-bg": "#ffffff", "--kt-fg": "#0b1e43", "--kt-muted": "#5e6d88", "--kt-surface": "#f7f9fd", "--kt-border": "#dce5f3", "--kt-accent": "#0b66f6" },
+    koyu: { "--kt-bg": "#0b1220", "--kt-fg": "#e6edf8", "--kt-muted": "#9aa8c2", "--kt-surface": "#111a2d", "--kt-border": "#24304a", "--kt-accent": "#6aa6ff" }
+  };
+  var FONTLAR = { "--kt-font-metin": '"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif', "--kt-font-baslik": '"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif', "--kt-font-math": '"Cambria Math", "STIX Two Math", "Latin Modern Math", serif' };
+
+  var dosyalar = new Map();   // paket içi yol → Blob
+  var manifest = null, bolumler = [], idDizini = {}, aktif = -1, tema = "acik", bekleyenGit = null;
+  var metinOnbellek = new Map(), veriUrlOnbellek = new Map();
+  var $ = function (id) { return document.getElementById(id); };
+  var cerceve = $("cerceve"), sorunlar = [];
+
+  function sorun(metin, hata) { sorunlar.push({ metin: metin, hata: !!hata }); sorunCiz(); }
+  function sorunCiz() {
+    var ul = $("sorunlar"); ul.innerHTML = "";
+    sorunlar.forEach(function (s) { var li = document.createElement("li"); li.textContent = s.metin; if (s.hata) li.className = "hata"; ul.appendChild(li); });
+    $("sorunOzet").textContent = sorunlar.length ? sorunlar.length + " kayıt" : "Sorun yok";
+  }
+
+  /* ---------- Zip okuma (DecompressionStream; kütüphane yok) ---------- */
+  async function zipAc(buf) {
+    var dv = new DataView(buf), u8 = new Uint8Array(buf);
+    var eocd = -1;
+    for (var i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 66000); i--) { if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; } }
+    if (eocd < 0) throw new Error("Zip merkezi dizini bulunamadı (dosya bozuk ya da zip değil).");
+    var adet = dv.getUint16(eocd + 10, true), cdOfs = dv.getUint32(eocd + 16, true);
+    var td = new TextDecoder("utf-8"), p = cdOfs, sonuc = new Map();
+    for (var k = 0; k < adet; k++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) throw new Error("Zip girdisi bozuk.");
+      var yontem = dv.getUint16(p + 10, true), sikBoy = dv.getUint32(p + 20, true);
+      var adBoy = dv.getUint16(p + 28, true), ekBoy = dv.getUint16(p + 30, true), yorumBoy = dv.getUint16(p + 32, true), yerel = dv.getUint32(p + 42, true);
+      var ad = td.decode(u8.subarray(p + 46, p + 46 + adBoy));
+      p += 46 + adBoy + ekBoy + yorumBoy;
+      if (ad.endsWith("/")) continue;
+      var yAdBoy = dv.getUint16(yerel + 26, true), yEkBoy = dv.getUint16(yerel + 28, true);
+      var basla = yerel + 30 + yAdBoy + yEkBoy, ham = buf.slice(basla, basla + sikBoy);
+      var blob;
+      if (yontem === 0) blob = new Blob([ham]);
+      else if (yontem === 8) {
+        if (typeof DecompressionStream === "undefined") throw new Error("Bu tarayıcı zip açamıyor; paketi açıp 'Klasör seç' ile yükle.");
+        blob = await new Response(new Blob([ham]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).blob();
+      } else throw new Error("Desteklenmeyen sıkıştırma yöntemi (" + yontem + "): " + ad);
+      sonuc.set(ad, blob);
+    }
+    return sonuc;
+  }
+
+  /* ---------- Yükleme ---------- */
+  function kokeIndir(map) {
+    // manifest.json'ı en kısa yolda bul; onun klasörü paket köküdür (zip içinde tek üst klasör olabilir).
+    var enKisa = null;
+    map.forEach(function (_, yol) { if (/(^|\/)manifest\.json$/.test(yol) && (enKisa === null || yol.length < enKisa.length)) enKisa = yol; });
+    if (enKisa === null) throw new Error("manifest.json bulunamadı — bu bir kkp/1 paketi değil.");
+    var onek = enKisa.slice(0, enKisa.length - "manifest.json".length);
+    var temiz = new Map();
+    map.forEach(function (blob, yol) { if (yol.startsWith(onek)) temiz.set(yol.slice(onek.length), blob); });
+    return temiz;
+  }
+  async function metin(yol) {
+    if (metinOnbellek.has(yol)) return metinOnbellek.get(yol);
+    var b = dosyalar.get(yol); if (!b) return null;
+    var t = await b.text(); metinOnbellek.set(yol, t); return t;
+  }
+  function veriUrl(yol) {
+    if (veriUrlOnbellek.has(yol)) return veriUrlOnbellek.get(yol);
+    var b = dosyalar.get(yol); if (!b) return null;
+    var soz = new Promise(function (res) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.readAsDataURL(uzantiliBlob(yol, b)); });
+    veriUrlOnbellek.set(yol, soz); return soz;
+  }
+  function uzantiliBlob(yol, b) {
+    var uz = (yol.split(".").pop() || "").toLowerCase();
+    var tip = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif", svg: "image/svg+xml", mp3: "audio/mpeg", mp4: "video/mp4", webm: "video/webm", woff2: "font/woff2", woff: "font/woff", css: "text/css", js: "text/javascript", json: "application/json", html: "text/html" }[uz];
+    return tip && b.type !== tip ? new Blob([b], { type: tip }) : b;
+  }
+
+  async function paketYukle(map, kaynakAdi) {
+    sorunlar = []; sorunCiz(); metinOnbellek.clear(); veriUrlOnbellek.clear(); idDizini = {}; aktif = -1;
+    dosyalar = kokeIndir(map);
+    var mtxt = await metin("manifest.json");
+    try { manifest = JSON.parse(mtxt); } catch (e) { throw new Error("manifest.json geçerli JSON değil: " + e.message); }
+    if (manifest.format !== "kkp/1") sorun("manifest.format 'kkp/1' değil: " + manifest.format, true);
+    bolumler = Array.isArray(manifest.bolumler) ? manifest.bolumler : [];
+    if (!bolumler.length) sorun("manifest.bolumler boş.", true);
+    var baslik = (manifest.kitap && manifest.kitap.baslik) || "";
+    if (!baslik) sorun("manifest.kitap.baslik boş (doğrulayıcı reddeder).", true);
+    $("kitapAd").textContent = baslik || "(başlıksız kitap)";
+    document.title = (baslik || "kkp/1") + " — yerel önizleme";
+    // id dizini: hangi id hangi bölümde (içindekiler ve bölümler arası bağlantılar için); id çakışması; sayaçlar; başlık kapsaması
+    var sayac = {}, basliklar = [];
+    for (var i = 0; i < bolumler.length; i++) {
+      var b = bolumler[i], h = await metin(b.dosya);
+      if (h === null) { sorun("Bölüm dosyası yok: " + b.dosya, true); continue; }
+      if (!/<section[^>]+class="[^"]*\bkt-bolum\b/.test(h)) sorun(b.dosya + ": section.kt-bolum bulunamadı", true);
+      var re = /\sid="([^"]+)"/g, m;
+      while ((m = re.exec(h))) {
+        if (m[1] in idDizini) { if (idDizini[m[1]] !== i) sorun("Id çakışması: \"" + m[1] + "\" hem " + bolumler[idDizini[m[1]]].dosya + " hem " + b.dosya + " içinde (yüklemede reddedilir; yeni bloklara boş id ver)", true); }
+        else idDizini[m[1]] = i;
+        var s = /^([a-z]+)(\d+)$/.exec(m[1]);
+        if (s) { var onceki = sayac[s[1]]; if (!onceki || Number(s[2]) > onceki.n) sayac[s[1]] = { n: Number(s[2]), hane: s[2].length }; }
+      }
+      var hre = /<h([1-3])\b[^>]*\sid="([^"]+)"/g, hm;
+      while ((hm = hre.exec(h))) basliklar.push({ id: hm[2], seviye: Number(hm[1]), dosya: b.dosya });
+    }
+    // Sonraki boş id'ler (tek bölüm revize edilirken yeni bloklara verilecek numaralar)
+    var oncelik = ["p", "h", "li", "sek", "tab", "eq", "eqx", "kutu", "kart", "sum", "not", "ek"];
+    var sonraki = Object.keys(sayac).sort(function (a, b) { var ia = oncelik.indexOf(a), ib = oncelik.indexOf(b); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b); })
+      .map(function (k) { var n = String(sayac[k].n + 1); while (n.length < sayac[k].hane) n = "0" + n; return k + n; });
+    $("sonrakiId").textContent = sonraki.length ? "Sonraki boş id'ler: " + sonraki.join(" · ") : "";
+    // İçindekiler kapsaması: dosyadaki h1–h3 başlıkları manifest'te var mı (tek bölüm revizyonunda eklenen başlık unutulur)
+    var tocHedefler = {};
+    (function topla(liste) { (liste || []).forEach(function (md) { if (md.hedef) tocHedefler[md.hedef] = true; topla(md.alt); }); })(manifest.icindekiler);
+    if (Object.keys(tocHedefler).length) basliklar.forEach(function (bs) {
+      if (!tocHedefler[bs.id]) sorun(bs.dosya + ": h" + bs.seviye + " başlığı (" + bs.id + ") manifest İçindekiler'inde yok; yeni eklendiyse manifest.icindekiler'e de yaz");
+    });
+    // Paket kökünde manifest ve bölümler dışında dosya var mı (doğrulayıcı düşürür)
+    dosyalar.forEach(function (_, yol) {
+      if (yol.indexOf("/") < 0 && yol !== "manifest.json" && !bolumler.some(function (b) { return b.dosya === yol; })) sorun("Kökte fazladan dosya (yüklemede düşer): " + yol);
+    });
+    $("altBilgi").textContent = kaynakAdi + " · " + bolumler.length + " bölüm · " + dosyalar.size + " dosya";
+    icindekilerCiz();
+    $("bos").hidden = true;
+    if (bolumler.length) bolumGoster(0);
+  }
+
+  /* ---------- İçindekiler ---------- */
+  function icindekilerCiz() {
+    var ul = $("icindekiler"); ul.innerHTML = "";
+    var liste = Array.isArray(manifest.icindekiler) && manifest.icindekiler.length ? manifest.icindekiler
+      : bolumler.map(function (b, i) { return { baslik: b.baslik || b.dosya, hedef: null, bolum: i }; });
+    function ekle(kok, maddeler, seviye) {
+      maddeler.forEach(function (md) {
+        var li = document.createElement("li"); if (seviye === 0) li.className = "bolum";
+        var bt = document.createElement("button"); bt.type = "button"; bt.textContent = md.baslik || "(başlıksız)";
+        var hedefBolum = md.hedef in idDizini ? idDizini[md.hedef] : (typeof md.bolum === "number" ? md.bolum : -1);
+        if (md.hedef && !(md.hedef in idDizini)) { bt.title = "Hedef id bulunamadı: " + md.hedef; sorun("İçindekiler hedefi yok: " + md.hedef + " (" + md.baslik + ")"); }
+        bt.dataset.bolum = hedefBolum; bt.dataset.hedef = md.hedef || "";
+        bt.addEventListener("click", function () { git(hedefBolum, md.hedef || null); });
+        li.appendChild(bt);
+        if (Array.isArray(md.alt) && md.alt.length) { var alt = document.createElement("ul"); ekle(alt, md.alt, seviye + 1); li.appendChild(alt); }
+        kok.appendChild(li);
+      });
+    }
+    ekle(ul, liste, 0);
+  }
+  function aktifIsaretle() {
+    var dugmeler = $("icindekiler").querySelectorAll("button");
+    dugmeler.forEach(function (b) { b.classList.toggle("aktif", Number(b.dataset.bolum) === aktif && b.parentElement.className === "bolum"); });
+  }
+
+  /* ---------- Bölüm oluşturma (sandbox iframe, srcdoc) ---------- */
+  function cikar(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.querySelector("section.kt-bolum") || doc.body;
+  }
+  async function varliklariBagla(kok, dosyaAdi) {
+    var oznitelikler = [["img", "src"], ["source", "src"], ["audio", "src"], ["video", "src"], ["video", "poster"], ["a", "href"], ["iframe", "src"]];
+    for (var k = 0; k < oznitelikler.length; k++) {
+      var etiket = oznitelikler[k][0], oz = oznitelikler[k][1], liste = kok.querySelectorAll(etiket + "[" + oz + "]");
+      for (var j = 0; j < liste.length; j++) {
+        var el = liste[j], deger = el.getAttribute(oz);
+        if (!deger || /^(https?:|data:|#|mailto:)/i.test(deger)) continue;
+        var yol = deger.replace(/^\.\//, "").split("#")[0].split("?")[0];
+        if (etiket === "a" && /\.html$/.test(yol) && bolumler.some(function (b) { return b.dosya === yol; })) { el.setAttribute("data-onizleme-bolum", yol); el.setAttribute(oz, "#"); continue; }
+        var u = await veriUrl(yol);
+        if (u) el.setAttribute(oz, u); else sorun(dosyaAdi + ": eksik varlık " + deger, true);
+      }
+    }
+    if (kok.querySelectorAll("img").length) {
+      kok.querySelectorAll("img").forEach(function (im) { if (!im.getAttribute("alt")) sorun(dosyaAdi + ": alt metni olmayan görsel (" + (im.getAttribute("src") || "").slice(0, 40) + "…)"); });
+    }
+  }
+  async function cssMetni(yollar) {
+    var parcalar = [];
+    for (var i = 0; i < yollar.length; i++) {
+      var t = await metin(yollar[i]);
+      if (t === null) { sorun("CSS yok: " + yollar[i], true); continue; }
+      // url(assets/…) → data URL
+      var esler = t.match(/url\((['"]?)([^)'"]+)\1\)/g) || [];
+      for (var j = 0; j < esler.length; j++) {
+        var m = /url\((['"]?)([^)'"]+)\1\)/.exec(esler[j]), yol = m[2];
+        if (/^(https?:|data:)/.test(yol)) continue;
+        var u = await veriUrl(yol.replace(/^\.\.\//, "assets/").replace(/^\.\//, ""));
+        if (u) t = t.split(esler[j]).join("url(" + u + ")");
+      }
+      parcalar.push("/* " + yollar[i] + " */\n" + t);
+    }
+    return parcalar.join("\n");
+  }
+  async function jsMetni(yollar) {
+    var parcalar = [];
+    for (var i = 0; i < yollar.length; i++) {
+      var t = await metin(yollar[i]);
+      if (t === null) { sorun("JS yok: " + yollar[i], true); continue; }
+      parcalar.push("<script data-dosya=\"" + yollar[i] + "\">\n" + t.replace(/<\/script/gi, "<\\/script") + "\n<\/script>");
+    }
+    return parcalar.join("\n");
+  }
+  function tokenCss(t) {
+    var satirlar = []; var T = TEMALAR[t];
+    for (var k in T) satirlar.push(k + ":" + T[k]);
+    for (var f in FONTLAR) satirlar.push(f + ":" + FONTLAR[f]);
+    return ":root{" + satirlar.join(";") + "}";
+  }
+  var YARDIMCI = "(function(){" +
+    "function tema(T){for(var k in T){document.documentElement.style.setProperty(k,T[k]);}document.documentElement.setAttribute('data-kt-theme',T.__ad||'');}" +
+    "window.addEventListener('message',function(e){var d=e.data||{};if(d.git){var el=document.getElementById(d.git);if(el){var dt=el.closest&&el.closest('details');while(dt){dt.open=true;dt=dt.parentElement&&dt.parentElement.closest('details');}el.scrollIntoView({block:'start'});el.style.outline='2px solid var(--kt-accent,#0b66f6)';setTimeout(function(){el.style.outline='';},1500);}}if(d.tema){tema(d.tema);}});" +
+    "window.addEventListener('error',function(e){parent.postMessage({tur:'hata',mesaj:String(e.message||e),dosya:String(e.filename||'')},'*');});" +
+    "window.addEventListener('unhandledrejection',function(e){parent.postMessage({tur:'hata',mesaj:'Promise: '+String(e.reason)},'*');});" +
+    "document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-onizleme-bolum]');if(a){e.preventDefault();parent.postMessage({tur:'bolum',dosya:a.getAttribute('data-onizleme-bolum')},'*');}});" +
+    "window.addEventListener('load',function(){parent.postMessage({tur:'hazir'},'*');});" +
+    "})();";
+
+  async function bolumGoster(i, hedef) {
+    if (i < 0 || i >= bolumler.length) return;
+    aktif = i; bekleyenGit = hedef || null;
+    var b = bolumler[i], html = await metin(b.dosya);
+    $("bolumNo").textContent = "Bölüm " + (i + 1) + " / " + bolumler.length;
+    $("onceki").disabled = i === 0; $("sonraki").disabled = i === bolumler.length - 1;
+    aktifIsaretle();
+    if (html === null) { cerceve.srcdoc = "<p style='font-family:system-ui;padding:24px'>Dosya yok: " + b.dosya + "</p>"; return; }
+    var kok = cikar(html);
+    await varliklariBagla(kok, b.dosya);
+    var ortak = manifest.ortak || {};
+    var css = await cssMetni([].concat(ortak.css || [], b.css || []));
+    var js = await jsMetni([].concat(ortak.js || [], b.js || []));
+    var temaObj = Object.assign({ __ad: tema }, TEMALAR[tema]);
+    var belge = "<!doctype html><html lang=\"tr\" data-kt-theme=\"" + tema + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
+      "<style>" + tokenCss(tema) + "html{background:var(--kt-bg);color:var(--kt-fg)}body{margin:0;padding:24px 32px 64px;font-family:var(--kt-font-metin);line-height:1.6}</style>" +
+      "<style>" + css + "</style></head><body>" + kok.outerHTML + "\n" + js + "\n<script>" + YARDIMCI + "<\/script></body></html>";
+    cerceve.srcdoc = belge;
+    void temaObj;
+  }
+  function git(bolum, hedef) {
+    if (bolum < 0) return;
+    if (bolum !== aktif) bolumGoster(bolum, hedef);
+    else if (hedef) cerceve.contentWindow.postMessage({ git: hedef }, "*");
+  }
+
+  window.addEventListener("message", function (e) {
+    var d = e.data || {};
+    if (d.tur === "hazir") { if (bekleyenGit) { cerceve.contentWindow.postMessage({ git: bekleyenGit }, "*"); bekleyenGit = null; } }
+    else if (d.tur === "hata") sorun((bolumler[aktif] ? bolumler[aktif].dosya : "") + " JS hatası: " + d.mesaj, true);
+    else if (d.tur === "bolum") { var idx = bolumler.findIndex(function (b) { return b.dosya === d.dosya; }); if (idx >= 0) bolumGoster(idx); }
+  });
+
+  /* ---------- Kabuk olayları ---------- */
+  $("onceki").addEventListener("click", function () { bolumGoster(aktif - 1); });
+  $("sonraki").addEventListener("click", function () { bolumGoster(aktif + 1); });
+  document.addEventListener("keydown", function (e) { if (e.target.tagName === "INPUT") return; if (e.key === "ArrowLeft" && aktif > 0) bolumGoster(aktif - 1); if (e.key === "ArrowRight" && aktif < bolumler.length - 1) bolumGoster(aktif + 1); });
+  document.querySelectorAll("button[data-tema]").forEach(function (bt) {
+    bt.addEventListener("click", function () {
+      tema = bt.dataset.tema; document.body.classList.toggle("koyu", tema === "koyu");
+      document.querySelectorAll("button[data-tema]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === bt)); });
+      if (aktif >= 0) cerceve.contentWindow.postMessage({ tema: Object.assign({ __ad: tema }, TEMALAR[tema]) }, "*");
+    });
+  });
+  async function zipDosyasi(f) {
+    try { $("altBilgi").textContent = "Açılıyor: " + f.name; await paketYukle(await zipAc(await f.arrayBuffer()), f.name); }
+    catch (e) { $("altBilgi").textContent = "Açılamadı"; sorun(String(e.message || e), true); }
+  }
+  async function klasor(files) {
+    var map = new Map();
+    Array.prototype.forEach.call(files, function (f) { map.set(f.webkitRelativePath || f.name, f); });
+    try { await paketYukle(map, (files[0] && files[0].webkitRelativePath ? files[0].webkitRelativePath.split("/")[0] : "klasör")); }
+    catch (e) { sorun(String(e.message || e), true); }
+  }
+  $("zipSec").addEventListener("change", function () { if (this.files[0]) zipDosyasi(this.files[0]); });
+  $("klasorSec").addEventListener("change", function () { if (this.files.length) klasor(this.files); });
+  var bos = $("bos");
+  ["dragenter", "dragover"].forEach(function (ad) { document.addEventListener(ad, function (e) { e.preventDefault(); bos.classList.add("surukle"); }); });
+  ["dragleave", "drop"].forEach(function (ad) { document.addEventListener(ad, function (e) { e.preventDefault(); bos.classList.remove("surukle"); }); });
+  document.addEventListener("drop", function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f && /\.zip$/i.test(f.name)) zipDosyasi(f); else if (f) sorun("Zip bekleniyordu: " + f.name, true);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "kitappta-kkp-donustur-arac",
+  "private": true,
+  "type": "module",
+  "description": "Kitappta kkp-donustur skill'i — araç bağımlılıkları (playwright: pişirme/ölçüm/kanıt; esbuild: doğrulayıcının modül paketleyicisi)",
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "esbuild": "0.25.12"
+  }
+}
