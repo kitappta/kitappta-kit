@@ -1,52 +1,82 @@
-# Kitappta kkp-donustur — hazır kitabınızı yapay zekâ agent'ıyla Kitappta'ya taşıyın
+# kkp-donustur — hazır kitabınızı Claude Code ile Kitappta'ya taşıyın
 
-Bu paket, ChatGPT/Claude ile yaptığınız hazır etkileşimli kitabı (tek sayfalık kitap, kendi menülü site, zip) Kitappta'ya doğrudan
-yüklenebilen **kkp/1 paketine** çevirmesi için **Claude Code**'a verilen bir "skill"dir: adım adım iş sırası + araçlar + kural seti.
-Kitabınızın hiçbir etkileşimi atılmaz; atılan yalnız menü, arama, tema gibi Kitappta okuyucusunun zaten verdiği çerçevedir.
-Sürüm: kural seti v2.1 · kit 27.09.2026.
+ChatGPT ya da Claude ile hazırladığınız etkileşimli kitabı, Kitappta'ya yüklenebilen pakete (kkp/1) kendi bilgisayarınızda çevirirsiniz;
+işi **Claude Code** adlı yapay zekâ aracı yapar, siz yönlendirir ve onaylarsınız. Kitabınızın hiçbir etkileşimi atılmaz (laboratuvar, test,
+kart, dipnot penceresi, gömülü uygulama); çıkan tek şey menü, arama, tema düğmesi gibi Kitappta okuyucusunun zaten verdiği çerçevedir.
+Word dosyası vermek isterseniz Kitappta editörü paketi sizin yerinize üretir; bu kite gerek kalmaz. Sürüm: kural seti v2.1 · kit 27.09.2026.
 
 ## Gerekenler
 
-- **Claude Code** (masaüstü uygulaması ya da terminal) ve bir Claude aboneliği (Pro ya da Max; ücretsiz plan Claude Code'u kullanamaz).
-- **Node.js 20+** (https://nodejs.org, "LTS"). Skill'in araçları Node ile çalışır.
-- İlk çalıştırmada araçlar bir Chromium indirir (kitabınızı "pişirmek" için tarayıcıda açar; ~150 MB, bir kez).
-- **git** (GitHub'dan kurulum için). Zip ile kurulumda gerekmez.
+| Ne | Neden | Nereden |
+|---|---|---|
+| Claude aboneliği (Pro ya da Max) | Claude Code ücretsiz planla çalışmaz | claude.ai → hesap ayarları |
+| Claude Code | Kitabı çeviren yapay zekâ aracı | claude.ai/code ya da aşağıdaki komut |
+| Node.js 20 ya da üstü (LTS) | Çevirme araçları Node ile çalışır | nodejs.org → "LTS" |
+| git | Kiti GitHub'dan kurmak ve güncellemek için | Mac: Terminal'de `git` yazınca kurulumu önerir; Windows: git-scm.com |
 
-## Kurulum — GitHub'dan (önerilen, güncellemeler kolay)
+İlk çalıştırmada araçlar bir Chromium indirir (yaklaşık 150 MB, bir kez). Bir kitap 10–40 dakika sürer. Windows'ta klasör yolunda
+Türkçe karakter ve boşluk olmasın (örnek `C:\Kitappta\maliye`).
 
-Claude Code'u açın, sohbete şu iki komutu yazın:
+## Kurulum (bir kez)
 
-```
-/plugin marketplace add kitappta/kitappta-kit
-/plugin install kkp-donustur@kitappta-kit
-```
+1. **Node.js:** nodejs.org'dan LTS kurun. Kontrol: terminalde `node --version` → `v20` ya da üstü.
+2. **git:** Mac'te `git --version` (yoksa çıkan pencereden kurun); Windows'ta git-scm.com.
+3. **Claude Code:** Mac'te `curl -fsSL https://claude.ai/install.sh | bash`; Windows PowerShell'de `irm https://claude.ai/install.ps1 | iex`.
+   Kontrol: yeni terminalde `claude --version`.
+4. **Giriş:** terminale `claude` yazın, tarayıcıda claude.ai hesabınızla giriş yapın.
+5. **Kit:** Claude Code sohbetine sırayla:
+   ```
+   /plugin marketplace add kitappta/kitappta-kit
+   /plugin install kkp-donustur@kitappta-kit
+   ```
+   İkisi de "Successfully" ile bitmeli; Claude Code'u kapatıp yeniden açın.
+6. **Kontrol:** `/plugin` → **Installed** → `kkp-donustur@kitappta-kit` listede. Artık `/kkp-donustur` komutu vardır.
 
-Güncelleme: `/plugin` → **Installed** → **Update now** (ya da terminalde `claude plugin update kkp-donustur@kitappta-kit`).
-Otomatik güncellemeyi `/plugin` → **Marketplaces** → **Enable auto-update** ile açabilirsiniz.
+Git kuramadıysanız: Kitappta ekibinden `kkp-donustur.zip` isteyin, içindeki `kkp-donustur` klasörünü `~/.claude/skills/` altına
+(Windows: `C:\Users\<adınız>\.claude\skills\`) koyun, Claude Code'u yeniden açın. Güncellemeleri de zip olarak alırsınız.
 
-## Kurulum — zip ile (git yoksa)
+## Kitabınızı çevirme
 
-Zip'i açın; içindeki `kkp-donustur` klasörünü (içinde `SKILL.md` var) `~/.claude/skills/` altına koyun
-(Windows: `C:\Users\<siz>\.claude\skills\kkp-donustur`). Claude Code'u yeniden başlatın; `/kkp-donustur` artık vardır.
-Güncelleme: yeni zip'i aynı yere açın.
+1. Boş bir klasör açın (örnek `Kitappta/maliye`), kitabınızın zip'ini ya da klasörünü içine koyun.
+2. Terminalde o klasöre girin, `claude` yazın.
+3. Sohbete `/kkp-donustur kitabim.zip` yazın. İlk seferde araçlar kurulur.
+4. **Envanteri onaylayın:** Claude etkileşimleri sayıp tablo gösterir (kaç laboratuvar, test, dipnot, gömülü uygulama, kart).
+   Sayıları kontrol edin; eksik varsa "şu da var, ekle" deyin; doğruysa "onaylıyorum". Onaysız üretime geçmez.
+5. Claude kitabı tarayıcıda açıp son halini alır, paketi kurar, Kitappta'nın doğrulayıcısından geçirir, kaynakla karşılaştırır.
+   Bir şeyi taşıyamazsa silmez, sorar; "kaybı kabul et" değil "bul ve taşı" deyin.
+6. Çıktı `kkp-calisma/` altında: `<kitap>-kkp.zip` ve `URETIM-NOTU.md` (envanter, taşınamayanlar, doğrulayıcı çıktısı, sorular).
 
-## Kullanım
+Yüklemeden önce kendiniz de gezebilirsiniz: Claude'a "önizlemeyi masaüstüne kopyala" deyin, `onizleme.html`'i çift tıklayıp zip'i
+sürükleyin; laboratuvar, test, kart ve koyu temayı deneyin; Sorunlar şeridi boş olmalı.
 
-1. Kitabınızın klasörüne (ya da zip'inin yanına) gidin, Claude Code'u orada açın.
-2. Yazın: `/kkp-donustur kitabim.zip` — ya da düz Türkçe: "kitabımı Kitappta paketine çevir".
-3. Claude önce **etkileşim envanterini** çıkarır ve size gösterir: kaç laboratuvar, kaç test, kaç dipnot, kaç gömülü uygulama var.
-   **Sayın**, eksik varsa söyleyin; onayınız olmadan üretime geçmez.
-4. Claude kitabı tarayıcıda açıp "pişirir" (kabuğun ürettiği kart, ikon, düğmeleri de alır), paketi kurar, Kitappta'nın gerçek
-   doğrulayıcısından geçirir (`kkp-lint`), kaynakla eleman eleman karşılaştırır (kanıt) ve size zip + üretim notu verir.
-5. Zip'i Kitappta paneline yükleyin (**Kütüphane → Paket yükle**). Panel rapor verirse raporu Claude'a yapıştırın: "yalnız bu bulguları
-   düzelt, içerik silme".
+## Kitappta'ya yükleme
 
-## Neyi yapmaz
+1. Panel → **Kütüphane** → kitabınız → **Paket yükle** → `<kitap>-kkp.zip`.
+2. **Taslak oluştu:** kabul edildi; raporda uyarılar olabilir, red değildir.
+3. **Reddedildi + rapor:** raporu olduğu gibi Claude'a yapıştırın ve ekleyin: "Panel raporu bu. Yalnız bu bulguları düzelt; başka hiçbir
+   şeyi değiştirme; envanteri koru; bir bulguyu gidermek için içerik silme." Yeni zip'i yeniden yükleyin.
+4. Editör paketi inceler, sürüm oluşturur, yayına alır. Yayından önce okuyucuda bir bölümü deneyin.
 
-- Kitabınızın içeriğini "iyileştirmez", yeni soru/formül üretmez; olanı taşır.
-- Kitappta sunucusuna hiçbir şey göndermez; her şey sizin bilgisayarınızda olur. Zip'i siz yüklersiniz.
+**Yeni baskı:** önceki paketi panelden indirip ("Düzeltilmiş paketi indir") yeni kaynağınızla Claude'a verin: "ikinci baskı, önceki paket
+ekte". Paragraf kimlikleri korunur, öğrenci notları yerinde kalır.
 
-## Sorun olursa
+## Güncelleme ve sorun giderme
 
-`kanit` "eleman kaybı" derse Claude'a "atma, bul" deyin: kural seti ne yapılacağını söyler (`kural-seti.md`, kural 2 ve 5).
-Kitappta ekibine ulaşın; üretim notunu ve `kkp-lint` çıktısını ekleyin.
+- Güncelleme: `claude plugin update kkp-donustur@kitappta-kit`, sonra Claude Code'u yeniden açın. Otomatik güncelleme: `/plugin` →
+  **Marketplaces** → kitappta-kit → **Enable auto-update**.
+
+| Belirti | Ne yapmalı |
+|---|---|
+| `/kkp-donustur` yok | Claude Code'u kapatıp açın; `/plugin` → Installed'da yoksa kurulum 5. adımı tekrarlayın |
+| "node bulunamadı" | Node.js LTS kurun, terminali kapatıp açın |
+| Chromium inmiyor | Claude'a "makinedeki Chrome'u kullan" deyin (araçlar `--tarayici chrome` ile çalışır) |
+| Claude "kayıp var / taşıyamadım" diyor | "Atma, bul" deyin; çözülmezse üretim notuyla Kitappta ekibine yazın |
+| Panel yine reddetti | Raporu tam yapıştırın, "içerik silme" deyin; envanteri önceki notla karşılaştırın |
+| Çok uzun sürüyor | Büyük kitapta normaldir; 40 dakikayı geçerse "nerede kaldın" diye sorun |
+
+## Gizlilik ve destek
+
+Kitabınızın dosyaları bilgisayarınızda kalır; Kitappta sunucusuna yalnız sizin yüklediğiniz zip gider. Claude Code, kitabı okuyup
+çevirmek için metni Anthropic'in Claude servisine gönderir (aboneliğinizin koşullarına tabidir). Kit hiçbir şeyi otomatik yüklemez,
+hesap bilgisi istemez; kaynak klasörünüz değiştirilmez, her şey `kkp-calisma/` altına yazılır. Destek: sorunuzu, `URETIM-NOTU.md`
+dosyasını ve varsa panel raporunu ekleyerek Kitappta ekibine yazın.
