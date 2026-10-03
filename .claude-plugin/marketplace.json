@@ -8,8 +8,8 @@
     {
       "name": "kkp-donustur",
       "source": "./plugins/kkp-donustur",
-      "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir (envanter → onay → pişirme → dönüşüm → kkp-lint → kanıt → zip)",
-      "version": "0.2.1"
+      "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir (envanter → onay → pişirme → dönüşüm → kkp-lint → kanıt → zip); Word ya da notlardan yeni kitabı da aynı biçimde üretir (Yol A)",
+      "version": "0.3.0"
     }
   ]
 }

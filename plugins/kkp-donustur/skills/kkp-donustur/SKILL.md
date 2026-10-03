@@ -1,6 +1,6 @@
 ---
 name: kkp-donustur
-description: "Hazır etkileşimli HTML kitabı (ChatGPT/Claude ile yapılmış, kendi menülü tek sayfa ya da site) Kitappta'nın kkp/1 paketine KAYIPSIZ çevirir: envanter → hoca onayı → pişirme (kabuk JS'inin ürettiği DOM tarayıcıdan alınır) → dönüşüm (CSS olduğu gibi, dialoglar bölüm içine, gömülü uygulamalar) → kkp-lint → kanıt → zip + üretim notu. Kullan: kullanıcı 'kitabımı Kitappta'ya çevir', 'kkp paketi yap', 'kitabım yüklenmiyor' dediğinde."
+description: "Kitappta kkp/1 kitap paketi üretir. İki yol: (B) hazır etkileşimli HTML kitabı (ChatGPT/Claude ile yapılmış, kendi menülü tek sayfa ya da site) KAYIPSIZ çevirir: envanter → hoca onayı → pişirme (kabuk JS'inin ürettiği DOM tarayıcıdan alınır) → dönüşüm (CSS olduğu gibi, dialoglar bölüm içine, gömülü uygulamalar) → kkp-lint → kanıt → zip + üretim notu; (A) Word, ders notu ya da sıfırdan yazılan metinden yeni kitabı doğrudan kkp/1 biçiminde üretir: yalın HTML kaynak → iskelet (id'ler, bölümler, manifest) → Bölüm Tekrar (quiz + kavram kartı) ve lab kartları → kkp-lint → önizleme → zip. Kullan: kullanıcı 'kitabımı Kitappta'ya çevir', 'kkp paketi yap', 'kitabım yüklenmiyor', 'yeni kitap yazıyorum', 'Kitappta için kitap hazırla', 'Word'den paket üret' dediğinde."
 allowed-tools: Bash(node *) Bash(npm *) Bash(npx *) Bash(python3 *) Bash(${CLAUDE_SKILL_DIR}/scripts/*) Read Write Edit Glob Grep
 ---
 # kkp-donustur — hazır HTML kitabı Kitappta paketine kayıpsız çevir
@@ -12,6 +12,11 @@ koşturduğu doğrulayıcının aynısı).
 **İlke (Kitappta, 27.09.2026):** hocanın yaptığı her şey (içerik, etkileşim, açılır kutular, kartlar, modallar, gömülü uygulamalar)
 **olduğu gibi** taşınır. Atılabilecek tek şey kural 4'teki kabuk listesidir (menü, arama, tema düğmesi, not, çevrimdışı). "Bunu
 taşıyamıyorum" demek yasak değildir; **sessizce atmak** yasaktır: envantere "taşınamadı" yazılır ve hocaya sorulur.
+
+**Önce yolu seç ve ilk mesajında söyle (kural 1):** kullanıcının elinde **hazır bir HTML kitap/site** varsa **Yol B** — aşağıdaki
+0–7 adımları. Elinde **Word, ders notu, düz metin** varsa ya da kitabı **seninle sıfırdan yazacaksa** **Yol A** — en alttaki "Yol A" bölümü
+(kitap doğrudan kkp/1 biçiminde kurulur; önce kendi okuyuculu bir HTML kitap yapıp sonra çevirmek yasaktır, kural 1 C). Kurulum
+(adım 0) iki yolda da aynıdır.
 
 ## 0. Kurulum (ilk çalıştırmada bir kez)
 
@@ -133,6 +138,82 @@ node "${CLAUDE_SKILL_DIR}/scripts/paketle.mjs" paket/ kkp-calisma/<kitap-slug>-k
 + `URETIM-NOTU.md` (kural 18 şablonu: envanter tablosu Durum'lu, taşınamayanlar, kabuk olarak atılanlar, kkp-lint/kanıt çıktıları,
 uyarıların gerekçesi, elle yapılacaklar, sorular). Kullanıcıya: zip'i **Kitappta paneli → Kütüphane → Paket yükle** ile yükler; panel
 raporu gelirse raporu sana yapıştırır: **yalnız bulguyu düzelt, içerik silme** (kural 19).
+
+## Yol A — sıfırdan ya da Word'den yeni kitap
+
+Yol B'nin envanter / pişirme / kanıt adımları burada yok (karşılaştırılacak kaynak yok); yerine **her bölümden sonra lint + önizleme**.
+İş bölümü editör kitiyle aynı: **sen içeriği yazarsın, araçlar mekaniği kurar** (id'ler, bölüm dosyaları, manifest, standart quiz/kart/lab
+yapısı). Id'leri asla elle uydurma; HTML'e elle blok ekleme. Kaynakta (hocanın metninde) olmayan içerik üretme (kural 16): formül,
+örnek, sayı uydurma; soruları ve kartları yalnız bölümün kendi metninden yaz.
+
+**A1. Girdi topla (sormadan varsayma):** kitap adı · bölüm planı (numaralı ana başlıklar; Önsöz/Kaynakça var mı) · kaynak metin —
+Word varsa hoca metni `.txt`/`.md` olarak kaydeder ya da sohbete yapıştırır (pandoc kuruluysa `scripts/docx-cikar.mjs kaynak.docx
+kkp-calisma/kaynak` çıkarımı doğrudan `kaynak.html` verir; pandoc kurulumunu sen yapma, mesajı ilet) · görseller (png/jpg/webp/svg;
+`kkp-calisma/kaynak/media/`) · **etkileşim planı**: varsayılan her bölümde Bölüm Tekrar (≥ 5 soru + ≥ 8 kavram kartı), parametrik
+model/formül olan bölümde 1 lab kartı; hoca "yalnız temel" derse lab yok · önceki baskı zip'i (ikinci baskı — id koruma, kural 10).
+
+**A2. `kkp-calisma/kaynak/kaynak.html` yaz** — yalın HTML parçası (html/head/body yok, stil yok, script yok), şu biçimde:
+- Bölüm = `<h1>` ve **numaralı**: `<h1>1. Giriş</h1>`; `<h1>Önsöz</h1>` → `00-onsoz`, `<h1>Kaynakça</h1>` → `90-kaynakca`, `<h1>Ek A …</h1>` → 80+.
+  Alt başlıklar `<h2>1.1 …</h2>`, `<h3>1.1.1 …</h3>`. Tek bölümlük pakette `--bolum NN` ver.
+- Metin `<p>`, listeler `<ul>/<ol>`, alıntı `<blockquote>`. **Kutu**: paragraf `<strong>Örnek 2.1:</strong>`, `Tanım 1.1:`, `Uyarı:`,
+  `Not:`, `Teorem`, `Çözüm`, `Soru 2.1:` ile başlarsa `div.kt-kutu` olur (ilk paragraf; devam paragraflarını sonra elle kutuya taşı).
+- **Formül** `<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML">…</math> (2.1)</p>` — numara parantezle paragraf
+  sonunda; metinde "Eşitlik 2.1" yazınca bağlantı kendiliğinden kurulur. Satır içi formül `<math>` (display'siz). TeX yazma, MathML yaz.
+- **Şekil** `<figure><img src="media/x.png" alt="betimleme"><figcaption>Şekil 2.1: Başlık</figcaption></figure>`; metinde "Şekil 2.1" bağlanır.
+- **Tablo**: önce `<p>Tablo 2.1: Başlık</p>` sonra `<table><thead>…<tbody>…`.
+- **Dipnot**: metinde `<sup><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref">1</a></sup>`, sonda
+  `<section id="footnotes" class="footnotes"><ol><li id="fn1"><p>Metin<a href="#fnref1" class="footnote-back">↩︎</a></p></li></ol></section>`.
+- **Lab isteği**: hocanın istediği yere `<p>[Etkileşim: arz-talep kaydırıcısı]</p>` — A4'te kart olur.
+- Yazım hatasını bile düzeltme; hocanın cümlesi hocanındır (kural 16).
+
+**A3. İskelet + ilk lint:**
+```bash
+node "${CLAUDE_SKILL_DIR}/scripts/kaynak-donustur.mjs" kkp-calisma/kaynak kkp-calisma/paket --kitap "<Kitap Adı>" --kaynak-adi kaynak.html \
+  --arac "kkp-donustur Yol A" [--onceki kkp-calisma/onceki.zip] [--bolum NN]
+node "${CLAUDE_SKILL_DIR}/scripts/kkp-lint.js" kkp-calisma/paket --ag-kapali
+```
+Araç bölümleri ayırır, her bloğa id verir (`h0001`, `p0012`, `eq-2-1`, `sek0001`, `tab0001`, `not0001`, `kutu0001`), dipnotları
+`section.kt-dipnotlar`a, "Eşitlik/Şekil/Tablo N.M" anmalarını bağlantıya çevirir, görselleri `assets/media/`ya, şablon `kitap.css` +
+`ortak.js`'i (quiz/kart motoru) pakete koyar, `manifest.json` + İçindekiler yazar; `kkp-calisma/kaynak/donusum-raporu.md`'yi oku
+(etkileşim istekleri `kutuNNNN` id'leriyle, çözülemeyen anmalar, kutu adayları, ikinci baskıda id eşleşmeleri). Lint **hata 0** olmalı;
+hata varsa `kaynak.html`'i düzelt, aracı değil.
+
+**A4. Etkileşim — HTML değil düz metin oku, JSON yaz, araç eklesin:**
+```bash
+node "${CLAUDE_SKILL_DIR}/scripts/bolum-metni.mjs" kkp-calisma/paket kkp-calisma/metin          # bNN-metin.txt: "[id] metin" satırları
+```
+- **Bölüm Tekrar** → her `tur: bolum` bölüm için `kkp-calisma/tekrar/bNN.json`:
+  `{ "bolum": "b02", "sorular": [{ "soru", "secenekler": [2–8], "dogru": 0-tabanlı, "aciklama" }], "kartlar": [{ "on", "arka" }] }`.
+  Soru **numarasız**; şıkta doğru cevabı ele verme (en uzun şık doğru olmasın, "hepsi/hiçbiri" yok); **şık harfine ya da konumuna
+  atıf yok** (soru, şık ve açıklamada — platform sırayı her açılışta karıştırır, kural 13); açıklama kaynağa atıf yapsın ("Eşitlik 2.3",
+  "Örnek 2.1"); sayısal soruda cevabı kaynaktaki denklemle kendin doğrula; kart ön yüz terim, arka yüz kaynaktaki tanım.
+  ```bash
+  node "${CLAUDE_SKILL_DIR}/scripts/tekrar-ekle.mjs" kkp-calisma/paket kkp-calisma/tekrar --rapor kkp-calisma/tekrar/rapor.md
+  ```
+  Standart yapı (`div.kt-quiz` + `fieldset` + `script#quiz-bNN-veri`) **platformun yönettiği** quiz'dir: cevap anahtarı öğrenciye
+  gitmez, sunucu puanlar, hoca panelde sonuçları görür. Elle yazılmış ya da başka motorlu quiz bunu alamaz. Aynı bölüme ikinci koşu
+  güvenlidir (aynı metin id'sini korur).
+- **Lab kartı** (parametrik model, kaydırıcı, çizim): `kkp-calisma/lab/bNN-<ad>.html` = `sablon/lab-kart.html`'deki
+  `div.kt-kart-govde`'nin **içeriği** (details/summary yazma; `label` + `input[type=range]`, `canvas` + `aria-label`,
+  `div.kt-sonuc[data-kt-dinamik]`; id'ler küçük harf kebab-case, pakette benzersiz; `<script>`, `<style>`, `on*=` yok); bölüm JS'i
+  `kkp-calisma/lab/bolum-NN.js` = `sablon/bolum-NN.js` kalıbı (tek IIFE, `boot()` idempotent, `kt:hazir`, renkler `renk("--kt-fg")`
+  token'dan — **bir bölümün bütün labları tek dosyada**); spec `kkp-calisma/lab/bNN-<ad>.json`:
+  `{ "bolum": "b02", "yer": { "istek": "kutu0001" } | { "basliktanSonra": "h0004" } | { "sonra": "p0012" }, "ozet": "Deneyin: …", "govde": "b02-denge.html", "js": "bolum-02.js" }`.
+  Kaydırıcı aralıklarını ve varsayılanları **kaynak metindeki örnek değerlerden** al.
+  ```bash
+  node "${CLAUDE_SKILL_DIR}/scripts/lab-ekle.mjs" kkp-calisma/paket kkp-calisma/lab
+  ```
+- Hoca kendi görünümünü isterse: `assets/css/kitap.css` şablonunun **sonuna** ek kural (platform token'ları `var(--kt-*)` ile; sabit
+  renk uyarı alır). Şablon dosyalarını değiştirme.
+
+**A5. Doğrulama:** `kkp-lint … --ag-kapali` hata 0 → `python3 "${CLAUDE_SKILL_DIR}/scripts/kkp-denetim.py" kkp-calisma/paket` →
+`onizleme.html`'i tarayıcıda açıp zip'i sürükle ve **her bölümü gez**: başlıklar/İçindekiler, formüller, şekiller, kutular, quiz geri
+bildirimi, kart çevirme, lab tuvali, koyu tema. Tipik hatalar: `KKP-ID-02` (elle eklenmiş blok), `KKP-JS-02` (bölüm JS'inde yasak dize —
+yorumda bile), `KKP-LNK-01` (hedefsiz anma — kaynaktaki numarayı düzelt).
+
+**A6. Teslim:** `scripts/paketle.mjs kkp-calisma/paket kkp-calisma/<kitap-slug>-kkp.zip` + `URETIM-NOTU.md` (`sablon/URETIM-NOTU.md`
+şablonu: girdi, çıktı sayıları, öz-denetim, hocaya sorular, bilinen eksikler). Panel yüklemesi ve "Sürüm oluştur" hocanın/editörün işi.
+**İkinci baskı:** panelden indirilen **düzeltilmiş** zip'i `--onceki` ile ver; id koruma oranı raporda — %80 altıysa teslim etme.
 
 ## Sık tuzaklar (hepsi yaşandı)
 

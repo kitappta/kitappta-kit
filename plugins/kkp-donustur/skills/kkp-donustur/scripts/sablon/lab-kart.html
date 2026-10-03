@@ -1,0 +1,20 @@
+<!-- kkp/1 — etkileşimli lab kartı şablonu (scripts/kkp/sablon/lab-kart.html); JS'i sablon/bolum-NN.js'teki örnek lab'dır.
+     Kural 4: kart = details.kt-kart > summary + div.kt-kart-govde. Etiket metinleri statik; yalnız değer/sonuç alanları data-kt-dinamik.
+     Tuval ve girdi id'leri serbest ama küçük harf kebab-case (^[a-z][a-z0-9-]*$). Girdi aralıklarını kaynak metindeki örnek değerlere göre seç. -->
+<details class="kt-kart" id="kartXXXX">
+  <summary id="sumXXXX">Deneyin: parametreleri değiştirip dengeyi izleyin</summary>
+  <div class="kt-kart-govde">
+    <div class="kt-kontrol">
+      <label for="lab-denge-a">a (talep sabiti): <span class="kt-deger" id="lab-denge-a-deger" data-kt-dinamik></span>
+        <input type="range" id="lab-denge-a" min="4" max="40" step="1" value="16"></label>
+      <label for="lab-denge-b">b (talep eğimi): <span class="kt-deger" id="lab-denge-b-deger" data-kt-dinamik></span>
+        <input type="range" id="lab-denge-b" min="1" max="10" step="1" value="4"></label>
+      <label for="lab-denge-c">c (arz sabiti): <span class="kt-deger" id="lab-denge-c-deger" data-kt-dinamik></span>
+        <input type="range" id="lab-denge-c" min="0" max="20" step="1" value="4"></label>
+      <label for="lab-denge-d">d (arz eğimi): <span class="kt-deger" id="lab-denge-d-deger" data-kt-dinamik></span>
+        <input type="range" id="lab-denge-d" min="1" max="10" step="1" value="2"></label>
+    </div>
+    <canvas id="lab-denge-tuval" width="640" height="400" aria-label="Arz ve talep doğruları ile denge noktası"></canvas>
+    <div class="kt-sonuc" id="lab-denge-sonuc" data-kt-dinamik></div>
+  </div>
+</details>

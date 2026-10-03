@@ -1,0 +1,55 @@
+<!-- kkp/1 — "Bölüm Tekrar" şablonu (scripts/kkp/sablon/tekrar-bNN.html). Bölümün section.kt-dipnotlar'ından ÖNCE, son içerik bloğundan sonra yerleşir.
+     NN = bölüm numarası; XXXX'leri kitap-genel sayaçlardan (h, p, li) ver — doğrulayıcı boş bırakılanı üretir ama ikinci baskıda kararlılık için sen ver.
+     Soru metni, şıklar ve kart yüzleri STATİK ve id'li kalır (öğrenci not alabilir); motor (assets/js/ortak.js) yalnız sınıf değiştirir,
+     metni yalnız [data-kt-dinamik] alanlara yazar. Şıkta doğru cevabı metinle ele verme; JSON'daki "dogru" 0 tabanlı şık indeksidir.
+     Quiz fieldset id'si paket genelinde benzersiz olmalı (kural 4): q-bNN-N — radio name ve JSON "id" aynı değeri alır (motor sorular[fieldset.id] ile eşler). -->
+<section class="kt-tekrar" id="tekrar-bNN">
+  <h2 id="hXXXX">Bölüm Tekrar</h2>
+
+  <div class="kt-quiz" id="quiz-bNN">
+    <fieldset id="q-bNN-1">
+      <p id="pXXXX" class="kt-soru">1. Doğrusal piyasa modelinde denge fiyatı hangi koşulda oluşur?</p>
+      <ul class="kt-secenekler">
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-1" value="0"> Talep edilen miktar arz edilen miktardan büyükken</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-1" value="1"> Talep edilen miktar arz edilen miktara eşitken</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-1" value="2"> Fiyat sıfırken</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-1" value="3"> Arz fonksiyonu sabitken</label></li>
+      </ul>
+      <div class="kt-geri-bildirim" data-kt-dinamik></div>
+    </fieldset>
+    <fieldset id="q-bNN-2">
+      <p id="pXXXX" class="kt-soru">2. Qd = 16 − 4P ve Qs = 4 + 2P için denge fiyatı kaçtır?</p>
+      <ul class="kt-secenekler">
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-2" value="0"> 1</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-2" value="1"> 2</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-2" value="2"> 4</label></li>
+        <li id="liXXXX"><label><input type="radio" name="q-bNN-2" value="3"> 8</label></li>
+      </ul>
+      <div class="kt-geri-bildirim" data-kt-dinamik></div>
+    </fieldset>
+    <div class="kt-quiz-kontrol" data-kt-dinamik><button type="button" class="kt-quiz-sifirla">Cevapları sıfırla</button></div>
+    <p class="kt-skor" data-kt-dinamik></p>
+  </div>
+  <script type="application/json" id="quiz-bNN-veri">
+  {"tur":"quiz","sorular":[
+    {"id":"q-bNN-1","soru":"Doğrusal piyasa modelinde denge fiyatı hangi koşulda oluşur?","secenekler":["Talep edilen miktar arz edilen miktardan büyükken","Talep edilen miktar arz edilen miktara eşitken","Fiyat sıfırken","Arz fonksiyonu sabitken"],"dogru":1,"aciklama":"Denge, Qd = Qs koşulunun sağlandığı fiyattır (Eşitlik 2.2)."},
+    {"id":"q-bNN-2","soru":"Qd = 16 − 4P ve Qs = 4 + 2P için denge fiyatı kaçtır?","secenekler":["1","2","4","8"],"dogru":1,"aciklama":"16 − 4P = 4 + 2P → 12 = 6P → P* = 2."}
+  ]}
+  </script>
+
+  <h3 id="hXXXX">Kavram kartları</h3>
+  <div class="kt-flash" id="flash-bNN">
+    <ol class="kt-flash-liste">
+      <li class="kt-flash-kart" id="liXXXX"><p class="kt-flash-on" id="pXXXX">Durağan denge</p><p class="kt-flash-arka" id="pXXXX">Piyasada oluşan dengenin değişme eğiliminde olmaması.</p></li>
+      <li class="kt-flash-kart" id="liXXXX"><p class="kt-flash-on" id="pXXXX">Kısmi denge</p><p class="kt-flash-arka" id="pXXXX">İncelenen piyasanın diğer piyasalarla etkileşiminin yok ya da ihmal edilebilir sayılması.</p></li>
+      <li class="kt-flash-kart" id="liXXXX"><p class="kt-flash-on" id="pXXXX">Denge fiyatı</p><p class="kt-flash-arka" id="pXXXX">Doğrusal modelde P* = (a − c) / (b + d).</p></li>
+    </ol>
+    <div class="kt-flash-kontrol" data-kt-dinamik>
+      <button type="button" class="kt-flash-onceki">Önceki</button>
+      <button type="button" class="kt-flash-cevir kt-birincil">Çevir</button>
+      <button type="button" class="kt-flash-sonraki">Sonraki</button>
+      <button type="button" class="kt-flash-karistir">Karıştır</button>
+      <span class="kt-flash-sayac"></span>
+    </div>
+  </div>
+</section>

@@ -49,6 +49,20 @@ Git kuramadıysanız: Kitappta ekibinden `kkp-donustur.zip` isteyin, içindeki `
 Yüklemeden önce kendiniz de gezebilirsiniz: Claude'a "önizlemeyi masaüstüne kopyala" deyin, `onizleme.html`'i çift tıklayıp zip'i
 sürükleyin; laboratuvar, test, kart ve koyu temayı deneyin; Sorunlar şeridi boş olmalı.
 
+## Yeni kitap yazıyorsanız (Word, ders notu ya da sıfırdan)
+
+Hazır bir HTML kitabınız yoksa aynı komut kitabı **doğrudan Kitappta biçiminde** kurar; çevirme adımı olmaz, kayıp da olmaz.
+1. Boş bir klasörde `claude` açın; metniniz Word'deyse `.txt` olarak kaydedip klasöre koyun ya da sohbete yapıştırın; görselleri de koyun.
+2. `/kkp-donustur yeni kitap: <kitap adı>` yazın ve bölüm planınızı söyleyin. Claude metni yalın HTML'e döker, kit araçları bölümleri,
+   kimlikleri ve İçindekiler'i kurar.
+3. Claude her bölüm için **Bölüm Tekrar** (en az 5 soru + 8 kavram kartı) ve istediğiniz yerlere **laboratuvar kartı** (kaydırıcılı
+   çizim) hazırlar. Sorular Kitappta'nın standart yapısında çıkar: cevap anahtarı öğrenciye gitmez, puanı sunucu verir, sonuçları
+   panelde görürsünüz. İstemediğiniz etkileşimi "yalnız temel" diyerek kapatın.
+4. Çıktı yine `kkp-calisma/` altında: `<kitap>-kkp.zip` + `URETIM-NOTU.md`; `onizleme.html` ile bölüm bölüm gezin.
+5. İkinci baskıda panelden indirdiğiniz önceki paketi Claude'a verin; öğrenci notları yerinde kalır.
+
+Metninizde olmayan hiçbir şey eklenmez: Claude formül, örnek ya da sayı uydurmaz; sorular yalnızca bölümün kendi metninden yazılır.
+
 ## Kitappta'ya yükleme
 
 1. Panel → **Kütüphane** → kitabınız → **Paket yükle** → `<kitap>-kkp.zip`.
