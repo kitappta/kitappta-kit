@@ -1,4 +1,4 @@
-# kkp/1 Hoca Kural Seti — yapay zekâ aracına verilecek üretim ve dönüşüm kuralları (v2.1, 27.09.2026)
+# kkp/1 Hoca Kural Seti — yapay zekâ aracına verilecek üretim ve dönüşüm kuralları (v2.3, 03.10.2026)
 
 > Bu belge **kendi kendine yeter**: yanında dosya, şablon ya da örnek paket yoktur; örnekler metnin içindedir. Hocanın kendi yapay
 > zekâ aracına (ChatGPT, Claude, Gemini, bir kodlama agent'ı …) **olduğu gibi** verilir: sohbete yapıştırılır, proje / özel talimat
@@ -16,6 +16,12 @@
 > mantığıyla budanmış ve dosya sırası bozulmuştu; modallar `document.body`'ye eklendiği için bölüme kapsanan CSS'ten pay alamadı;
 > genişlik 64rem'e sabitlenmişti. v2.1 dört kural ekler: **pişirme** (kural 5, ilk satır), **CSS olduğu gibi** (kural 5 ve 12),
 > **dialog bölüm içine** (kural 13), **genişlik serbest / iç kaydırma yok** (kural 12).
+>
+> **Neden v2.3 (03.10.2026):** ikinci kitap ("Türk Dili I": tek sayfa, 1389 örnek çipi, A–Z dizini, "doğrusunu göster", Tailwind +
+> Leaflet'li harita atlası, TDK sözlük aracı) bu kurallarla çevrildi; kayıpsız çıktı ama beş yeni durum görüldü ve kurala bağlandı:
+> **Türkçe harfli id** çakışır (`az-Ç`→`az-c`), **başlıkta id yok** (İçindekiler section'a bağlı), **gömülü uygulamanın CSS'i satır içi**
+> olmalı (bağlı dosya bölüm CSS'i sayılıp kapsanıyor), **tarayıcıda CSS üreten kütüphane** (Tailwind CDN) pişirilir, **canlı servis**
+> (TDK) taşınamaz — sorulur, platforma önerilir (kural 5–6).
 >
 > Tam teknik spesifikasyon [kkp-v1.md](kkp-v1.md); bu belge onun yapay zekâya anlatılmış halidir ve onunla çelişmez.
 >
@@ -136,6 +142,13 @@ B yolunun çekirdeği. Her satır önceki vakada gerçekten karşılaşılan bir
 | Satır içi `<script>` (ör. mini sitenin 7 KB'lık script'i) | `assets/js/<ad>.js` dosyasına; bölüm sayfasının sonunda `<script src>`; manifest `js` listesine. JSON veri bloğu (`type="application/json"`) satır içinde kalabilir. |
 | Yapay zekâ üretim artıkları: `data-eb-object-id`, `data-source-id`, sürüm numaralı sınıflar (`mp-…-v143`) | Sınıflar kalır (CSS'e bağlı). Kaynak kimliği tek öznitelikte (`data-kaynak-id`) saklanır, diğer iz öznitelikleri silinir. |
 | EMF/WMF görsel, `.docx`/`.md`/`.txt` yardımcı dosyalar, `denetim/` raporları | Pakete girmez; PNG kopyası varsa o kullanılır; yoksa üretim notuna "ELLE" yazılır. |
+| Gömülü uygulamanın **kendi CSS dosyaları** (`<link href="x.css">`; Leaflet, Font Awesome CSS'i) | Gömülü belgeye **satır içi `<style>`**. Doğrulayıcı `assets/css/*.css` dosyalarını bölüm CSS'i sayıp `.kt-bolum` altına kapsar; gömülü belgede `.kt-bolum` yoktur, bağlı dosya stil vermez. Yazı tipi `assets/fonts/*.woff2`, görsel `assets/media/`; `url()` yolları embed konumuna göre `../fonts/…`, `../media/…`. |
+| Gömülü uygulama **tarayıcıda CSS üreten** kütüphane kullanıyor (Tailwind Play CDN `cdn.tailwindcss.com`, JIT) | CDN script'i pakete giremez (allowlist dışı) ve çevrim dışı çalışmaz. Sayfayı tarayıcıda aç, arayüzü gezdir (sekmeler, tema, filtre — sonradan oluşan sınıflar da üretilsin), **üretilen CSS'i al** ve gömülü belgeye satır içi koy; CDN script'ini ve `tailwind.config`'i sil. |
+| Harita karoları, uydu görüntüsü, dış görsel servisi (`L.tileLayer('https://…')`) | Okuyucu dış görsel almaz (`img-src` yalnız paket). Yerine paketlenebilir temel katman: ülke sınırları (Natural Earth 110m TopoJSON ~100 KB, `assets/js/veri-<ad>.js`) ya da statik harita görseli; işaretçi/çokgen/odaklama aynen. Üretim notuna yaz. |
+| Başlıkların id'si yok; kaynağın İçindekiler'i `section` id'lerine bağlı (`s-3-1-1-1`) | Her başlığa `hNNNN` ver; İçindekiler'i kaynağın hiyerarşisiyle kur (section id derinliği = seviye). Derinlik sınırı yok; okuyucu çizer. |
+| Türkçe harfli id (`az-Ç`, `bolum-İ`) | Doğrulayıcı `Ç→c, İ→i, Ş→s, Ü→u` çevirir ve mevcut `c/i/s/u` id'leriyle **çakışır** ("İ" paneli "i" panelini yutar). Sen çevir, benzersiz tut (`az-cc`, `az-ii`, `az-ss`, `az-uu`); `href="#…"` ve `aria-controls` birlikte; JS id'yi öznitelikten okuyorsa aynen çalışır. |
+| **Canlı servis** aracı: TDK sözlüğü (`sozluk.gov.tr`), döviz, hava durumu, herhangi bir API | Taşınamaz: okuyucuda ağ kapalı (`connect-src 'none'`), veri paketlenemez (bütün sözlük). Kitaba özel taklit yazma; envantere **taşınamadı**, hocaya sor, üretim notuna "Kitappta platform özelliği olarak önerilir" yaz. |
+| Gömülü uygulamanın kendi "kitaba dön / kapat" düğmesi (`parent.postMessage`, `history.back`) | Düğme kaldırılır (çağrı yasak, sandbox'ta yol yok); kapatmayı bölümdeki dialog başlığı ("← Kitaba dön") verir. |
 
 ### 6. Yasak → yerine ne konur
 
@@ -337,6 +350,9 @@ id'ler kkp şemasına dönüştüğünde JS kopmasın.
   ile; (3) veri satır içi `<script type="application/json" id="quiz-bNN-veri">` ya da `veri-<ad>.js`; (4) JS çalışmazsa içerik yine
   okunur; (5) sınıf adları `kt-` ile başlar. B yolunda kaynağın motoru dialog içinde metin üretiyorsa (önceki vakadaki gibi) **olduğu
   gibi taşı** ve envantere `uyarlandı: metin dialogda üretiliyor, not alınamaz` yaz — atma.
+- **Soru yazım kuralı — karıştırma.** Soru ve şık sırası her açılışta karışır: şık metninde, soru metninde ve AÇIKLAMADA şık harfine ya da
+  konumuna atıf yapma ("B şıkkı", "yukarıdakilerin hepsi", "ilk ikisi", "bir önceki soru") — platform doğru şıkkın görünen harfini kendisi
+  yazar. Soruyu numarasız yaz ya da hepsini 1'den sırayla numarala.
 - Veri: büyük veri `assets/js/veri-<ad>.js` içinde `window.ktVeri_<ad> = {…}` (≤ 1 MB, gerekirse böl); `fetch` yok.
 
 ### 14. `manifest.json`
@@ -539,6 +555,19 @@ dialog.site-dialog::backdrop{background:rgba(7,14,24,.86)}` eklenir.
 ---
 
 **Sürüm notları**
+- v2.3 (03.10.2026) — ikinci kitap testi: hocanın "Türk Dili I" (V250) kitabı Hasan'ın isteğiyle `kkp-donustur` skill'iyle sıfırdan
+  çevrildi (10 bölüm, 198 başlık, 1389 örnek çipi, A–Z dizini, "doğrusunu göster", Tailwind + Leaflet atlası modalda; kkp-lint 0 hata,
+  kanıt GEÇTİ, okuyucu laboratuvarında kaynakla eleman eleman eşit). Kural 5 tablosuna yedi satır: gömülü uygulama CSS'i satır içi
+  (doğrulayıcı bağlı CSS'i bölüm CSS'i sayıp kapsıyor — atlas stilsiz açılmıştı), tarayıcıda CSS üreten kütüphane (Tailwind CDN) pişirilir,
+  harita karoları yerine paketlenebilir temel katman, başlıkta id yoksa `hNNNN` + kaynağın İçindekiler hiyerarşisi (derinlik sınırsız),
+  Türkçe harfli id benzersiz ASCII'ye (doğrulayıcı `İ→i` çakıştırıyordu), canlı servis (TDK) taşınamaz — sorulur ve platforma önerilir,
+  gömülü uygulamanın kendi "kitaba dön" düğmesi kaldırılır. Öz-denetim scripti: İçindekiler derinlik uyarısı kaldırıldı. Platform tarafına
+  dört madde (TECH_DEBT 03.10): yazı tiplerine CORS, embed'e bağlı CSS'in kapsam dışı işlenmesi, sandbox'ta dış bağlantı / embed→bölüm
+  sinyali, sözlük aracı.
+- v2.2 (01.10.2026, Plan 32) — kural 13'e "Soru yazım kuralı — karıştırma" maddesi eklendi: Kitappta okuyucusu standart iskeletteki quiz'i
+  kendisi yönetir (cevap anahtarı okuyucuya gitmez, cevabı sunucu puanlar) ve soru ile şık sırasını her açılışta karıştırır; metinde şık
+  harfine/konumuna atıf yapılmaz, soru ya numarasız ya da 1'den sırayla numaralı yazılır. Kaynağın kendi test motoruyla taşınan quiz'ler
+  eskisi gibi çalışır (platform onları yönetmez). Biçim sözleşmesi değişmedi; aynı madde editör kitinin kural setine (v1.10) de girdi.
 - v2.1 (27.09.2026, aynı gece) — Hasan okuyucuda v2.0 dönüşümünü inceledi: "çok fazla kayıp; modalların CSS'i gitmiş; para türleri
   bozuk; içerik full width olsun; iç scroll olmasın; hocanın yaptığı her şey olduğu gibi yüklensin, biz yalnız kendi sağladığımız
   özellikleri engelleyelim." Dört kök neden bulundu ve kurala bağlandı: kabuk JS'inin ürettiği DOM statik dosyada yok →

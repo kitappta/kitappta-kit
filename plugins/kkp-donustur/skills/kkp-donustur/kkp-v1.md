@@ -217,6 +217,16 @@ ile yeniden yazılması yasak.
   (talimat v1.6: üretici kendi quiz/kart motorunu yazar; şart olanlar üretim talimatı kural 7'nin beş maddesi). Kitappta'nın kendi
   aracı `scripts/kkp/sablon/ortak.js` + `kitap.css` şablonlarını kullanır (skill kuralı, standart dayatmaz). Okuma sütunu paketindir
   (`kitap.css` kök kuralı `.kt-bolum{max-width}`).
+- **Platform notu (01.10.2026, [Plan 32](../plans/32-quiz-izleme.md)) — paket biçimi değişmedi, v1 paketler aynen yüklenir.** Kitappta şablon
+  yapısındaki quiz'i platform yönetir: `script#<quiz>-veri` servis anında belgeden çıkarılır (cevap anahtarı okuyucuya gitmez; puanlamayı
+  sunucu yapar, doğru şık + açıklama öğrenci cevabını gönderdikten sonra döner), `div.kt-quiz` `data-kt-motor` + `data-kt-quiz` alır; paket
+  motoru `data-kt-motor` bayrağına uymalıdır (bayrağı görünce o bileşeni kurmaz — şablon motoru böyledir). Koşullar: fieldset'ler
+  `div.kt-quiz`'in doğrudan ve bitişik çocukları, quiz başına ≤ 200 soru (bölümde toplam ≤ 500), soru başına 2–16 şık, her
+  `ul.kt-secenekler > li` içinde tek radio ve `value` = şık indeksi (0'dan), JSON `sorular[].id` = `fieldset` id'si, `data-kt-veri` yok.
+  Koşulları sağlamayan quiz yönetilmez: paketin kendi motoruyla eskisi gibi çalışır. Soru ve şık sırası her açılışta karışır — soru, şık
+  ve açıklama metninde şık harfine ya da konumuna atıf yapılmaz (üretim talimatı kural 7). `data-kt-quiz` platformundur; pakette yazılmışsa
+  servis anında silinir. Kavram kartı motoru pakette kalır; platform yalnız `li.kt-flash-kart[id]` üzerindeki `kt-aktif` / `kt-cevrik`
+  sınıf değişimini gözler (kart `p.kt-flash-on` + `p.kt-flash-arka` taşımalıdır).
 
 ## 8. Sınırlar (`packages/contracts` `PAKET_*` sabitleri)
 

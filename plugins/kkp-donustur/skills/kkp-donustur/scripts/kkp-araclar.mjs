@@ -56,11 +56,21 @@ export function jsTara(js) {
 
 const ID_OZNITELIK_RE = /(?<![\w-])(id|for|aria-labelledby|aria-describedby|aria-controls|data-card-target|data-figure-target|data-heading-id)="([^"]*)"/g;
 
-/** Büyük harfli id ve id referanslarını küçültür (doğrulayıcı KKP-ID-03 aynı şeyi yapar; biz yaparsak JS/CSS bağları da tutar). */
+/** Türkçe / ASCII dışı harfli id (`az-Ç`, `bolum-İ`): doğrulayıcı `Ç→c, İ→i, Ş→s, Ü→u` çevirir ve mevcut `c/i/s/u` id'leriyle ÇAKIŞIR
+    (Türk Dili I A–Z dizininde "İ" paneli "i" panelini yuttu, 03.10.2026). Benzersiz ASCII karşılık: çift harf (`cc`, `gg`, `ii`, `oo`,
+    `ss`, `uu`; dotless ı → `ix`), başka ASCII dışı karakter `u<hex>`. */
+const ASCII_DISI = { ç: "cc", ğ: "gg", ı: "ix", ö: "oo", ş: "ss", ü: "uu", â: "a", î: "i", û: "u" };
+export function idAscii(v) {
+  if (/^[\x00-\x7F]*$/.test(v)) return v;
+  return [...v].map((c) => (/^[\x00-\x7F]$/.test(c) ? c : c === "İ" ? "ii" : (ASCII_DISI[c.toLowerCase()] ?? "u" + c.codePointAt(0).toString(16)))).join("");
+}
+/** Büyük harfli / Türkçe harfli id ve id referanslarını ASCII küçük harfe çevirir (doğrulayıcı KKP-ID-03 küçültür ama Türkçe harfte
+    çakıştırır; biz yaparsak JS/CSS bağları da tutar). `href="#…"`, `aria-controls`, `for` … birlikte çevrilir. */
 export function idKucult(html) {
+  const cevir = (v) => idAscii(v).toLowerCase();
   return html
-    .replace(ID_OZNITELIK_RE, (t, a, v) => (/[A-Z]/.test(v) ? `${a}="${v.toLowerCase()}"` : t))
-    .replace(/href="#([^"]*[A-Z][^"]*)"/g, (m, v) => `href="#${v.toLowerCase()}"`);
+    .replace(ID_OZNITELIK_RE, (t, a, v) => { const y = cevir(v); return y === v ? t : `${a}="${y}"`; })
+    .replace(/href="#([^"]+)"/g, (m, v) => { const y = cevir(v); return y === v ? m : `href="#${y}"`; });
 }
 
 /**
@@ -75,6 +85,23 @@ export function basliklariNumarala(html, sayac, harita = new Map()) {
     return `<${etiket}${on} id="${yeni}" data-kaynak-id="${eski}"`;
   });
   return { html: out, harita };
+}
+
+/**
+ * Kaynak başlıklarında id YOKSA (Türk Dili I: 197 başlık, hiçbirinde id; kaynağın İçindekiler'i section id'lerine bağlıydı) h1–h4'e
+ * `hNNNN` verir ve listeyi döner. `sayac` paket geneli ortak. İçindekiler için: `icindekilerKur({ basliklar: liste, harita: new
+ * Map(liste.map((b) => [b.id, b.id])), … })` — ya da kaynağın hiyerarşisi başlık düzeyinde değil section id'sindeyse (`s-3-1-1-1`)
+ * ağacı kendin kur (manifest `alt` sınırsız iç içe olabilir).
+ */
+export function idsizBasliklar(html, sayac, birim = "") {
+  const liste = [];
+  const out = html.replace(/<(h[1-4])\b([^>]*)>([\s\S]*?)<\/\1>/g, (t, etiket, on, ic) => {
+    if (/\sid="/.test(on)) return t;
+    const id = "h" + pad4(++sayac.n);
+    liste.push({ id, level: Number(etiket[1]), title: ic.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 200), birim });
+    return `<${etiket}${on} id="${id}">${ic}</${etiket}>`;
+  });
+  return { html: out, liste };
 }
 
 /** href="#eski", aria-*, for, data-* hedeflerini haritaya göre günceller. */
@@ -295,9 +322,12 @@ export const EMBED_DIALOG_CSS = `
 /* ---------------- gömülü belge taşıma ---------------- */
 
 /**
- * Kaynağın ayrı HTML uygulamasını (assets/interactive/x/y.html) kkp embed'ine taşır: assets/embed/<ad>.html; bağlı css/js
- * dosyaları assets/css/embed-<ad>*.css ve assets/js/embed-<ad>*.js olarak kopyalanır (JS'te parent.postMessage silinir,
- * yasak API raporlanır), ≥ 4 KB base64 görseller assets/media'ya çıkar, dış <a target=_blank> bağlantıları düz metne döner.
+ * Kaynağın ayrı HTML uygulamasını (assets/interactive/x/y.html) kkp embed'ine taşır: assets/embed/<ad>.html; bağlı JS dosyaları
+ * assets/js/embed-<ad>*.js olarak kopyalanır (parent.postMessage silinir, yasak API raporlanır); bağlı CSS dosyaları embed'e
+ * SATIR İÇİ `<style>` olarak girer (url() medyası assets/media, woff2 assets/fonts; yol embed konumuna göre `../media/…`);
+ * ≥ 4 KB base64 görseller assets/media'ya çıkar, dış <a target=_blank> bağlantıları düz metne döner.
+ * Neden satır içi: doğrulayıcı `assets/css/*.css` dosyalarını bölüm CSS'i sayıp `.kt-bolum` altına önekler (CSS-09); embed belgesinde
+ * `.kt-bolum` yoktur → `<link>`li embed stilsiz açılır (Türk Dili I atlası, 03.10.2026). Embed içi `<style>` embed modunda işlenir.
  * Dönen: { rapor: [{dosya, yasak:[…]}], n: base64 sayısı }.
  */
 export function embedTasi({ kaynakHtmlYolu, ad, paketDizin }) {
@@ -305,18 +335,34 @@ export function embedTasi({ kaynakHtmlYolu, ad, paketDizin }) {
   const kaynakDizin = path.dirname(kaynakHtmlYolu);
   const rapor = [];
   let sira = 0;
+  const cssSatirIci = (kaynak, ref) => {
+    let css = oku(kaynak).replace(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^"')\s]+))\s*\)/g, (t, a, b, c) => {
+      const r = (a ?? b ?? c ?? "").trim();
+      if (/^(https?:|\/\/|data:|#)/i.test(r)) return t;
+      const k = path.resolve(path.dirname(kaynak), r.split("?")[0].split("#")[0]);
+      if (!fs.existsSync(k)) return t;
+      const font = /\.woff2$/i.test(k);
+      const yeniAd = `embed-${ad}-${path.basename(k)}`;
+      kopyala(k, path.join(paketDizin, font ? "assets/fonts" : "assets/media", yeniAd));
+      return `url(${font ? "../fonts/" : "../media/"}${yeniAd})`;
+    });
+    css = css.replace(/<\/style/gi, "<\\/style");
+    rapor.push({ dosya: `assets/embed/${ad}.html <style> ← ${ref}`, satirIci: true, yasak: [] });
+    return `<style data-kt-kaynak="${kacir(ref)}">\n${css}\n</style>`;
+  };
   html = html.replace(/<(link|script)\b([^>]*)\b(href|src)="([^"]+)"([^>]*)>/g, (tum, etiket, on, oz, ref, son) => {
     if (/^(https?:|\/\/|data:)/i.test(ref)) return tum;
     const kaynak = path.resolve(kaynakDizin, ref.split("?")[0]);
     if (!fs.existsSync(kaynak)) return tum;
     const uz = path.extname(kaynak).toLowerCase();
     if (etiket === "link" && uz !== ".css") return tum;
+    if (uz === ".css") return cssSatirIci(kaynak, ref);
     const yeniAd = `embed-${ad}${sira ? "-" + sira : ""}${uz}`; sira++;
-    const hedef = uz === ".css" ? path.join(paketDizin, "assets/css", yeniAd) : path.join(paketDizin, "assets/js", yeniAd);
+    const hedef = path.join(paketDizin, "assets/js", yeniAd);
     let icerik = oku(kaynak);
-    if (uz === ".js") { const pm = postMessageSil(icerik); icerik = pm.js; const t = jsTara(icerik); rapor.push({ dosya: `assets/js/${yeniAd}`, postMessageSilindi: pm.sayi, yasak: t.yasak.map((y) => `${y.satir}: ${y.ad}`), sozdizimi: sozdizimiHatasi(icerik) }); }
+    const pm = postMessageSil(icerik); icerik = pm.js; const t = jsTara(icerik); rapor.push({ dosya: `assets/js/${yeniAd}`, postMessageSilindi: pm.sayi, yasak: t.yasak.map((y) => `${y.satir}: ${y.ad}`), sozdizimi: sozdizimiHatasi(icerik) });
     yaz(hedef, icerik);
-    return `<${etiket}${on}${oz}="${uz === ".css" ? "../css/" : "../js/"}${yeniAd}"${son}>`;
+    return `<${etiket}${on}${oz}="../js/${yeniAd}"${son}>`;
   });
   // satır içi <script> gövdeleri (doğrulayıcı dosyaya taşır ama METNİNİ tarar): postMessage sil, yasak raporla
   let satirIci = 0;

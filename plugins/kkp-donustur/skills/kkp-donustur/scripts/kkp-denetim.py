@@ -211,7 +211,7 @@ def ana(yol):
     def toc(liste, derinlik=1):
         for md in liste or []:
             if md.get("hedef") not in tum_idler: uyari("manifest.json", "icindekiler hedefi pakette yok: %s (%s)" % (md.get("hedef"), md.get("baslik", "")))
-            if derinlik > 3: uyari("manifest.json", "icindekiler 3 seviyeden derin: %s" % md.get("baslik", ""))
+            # derinlik sınırı yok: doğrulayıcı şeması ve okuyucu ağacı sınırsız iç içe madde kabul eder (Türk Dili I: 4 seviye, 03.10.2026)
             toc(md.get("alt"), derinlik + 1)
     toc(m.get("icindekiler"))
 

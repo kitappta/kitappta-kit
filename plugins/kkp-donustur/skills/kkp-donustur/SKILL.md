@@ -5,7 +5,7 @@ allowed-tools: Bash(node *) Bash(npm *) Bash(npx *) Bash(python3 *) Bash(${CLAUD
 ---
 # kkp-donustur — hazır HTML kitabı Kitappta paketine kayıpsız çevir
 
-Tek doğruluk kaynağı **[kural-seti.md](kural-seti.md)** (v2.1). Bu skill kuralları tekrar etmez; iş sırasını ve araçları verir.
+Tek doğruluk kaynağı **[kural-seti.md](kural-seti.md)** (v2.3). Bu skill kuralları tekrar etmez; iş sırasını ve araçları verir.
 Spesifikasyon [kkp-v1.md](kkp-v1.md). Kesin kapı **kkp-lint** (`${CLAUDE_SKILL_DIR}/scripts/kkp-lint.js` — Kitappta panelinin yüklemede
 koşturduğu doğrulayıcının aynısı).
 
@@ -45,6 +45,15 @@ Kaynağı okurken şunlara karar ver (karar tablosunu üretim notuna yazacaksın
   oku; `addEventListener('click'` yoksa ve `DOMContentLoaded`'da DOM üretiyorsa "pişir"; click/keydown dinliyorsa "katman".
 - **Dipnotlar nerede?** (HTML'de mi, JS'te bir sözlük mü) · **Gömülü uygulamalar** (iframe, `assets/interactive/*`) ve kaynakta nasıl açıldıkları
   (satır içi mi, modal mı — **aynısı** korunur) · **Modallar** nasıl açılıyor (div+sınıf mı, `<dialog>` mı).
+- **Canlı servis var mı?** (TDK sözlüğü `sozluk.gov.tr`, hava durumu, döviz, harita karoları, herhangi bir API) → okuyucuda ağ yok
+  (`connect-src 'none'`), `fetch` yasak. Veri paketlenebiliyorsa paketle (`veri-<ad>.js`); paketlenemiyorsa (bütün sözlük) **taşınamadı**:
+  envantere yaz, hocaya sor, üretim notuna "Kitappta platform özelliği olarak önerilir" yaz. Kitaba özel taklit yazma. Harita karoları
+  yerine paketlenebilir temel katman (ülke sınırları) olur.
+- **Sayfanın içindeki satır içi `<script>` katmanları** (A–Z akordeonu, "doğrusunu göster" gibi IIFE'ler): `--engelle` ile durdurulamaz
+  (dosya değil). Pişirmede bıraktıkları "hazır" bayrağını `--temizle "[data-x-ready]"` ile sil; script'i `kitap.js`'e **idempotent** al
+  (ikinci koşuda etiket/düğme çift eklemesin — `if(!el.querySelector('.etiket'))`), `kt:hazir`a bağla.
+- **Başlıklarda id var mı?** Yoksa (İçindekiler `section` id'sine bağlıysa) `idsizBasliklar` ile `hNNNN` ver; İçindekiler'i kaynağın
+  hiyerarşisiyle kur (section id derinliği `s-3-1-1-1` → 4. seviye; manifest `alt` sınırsız iç içe olabilir, okuyucu çizer).
 
 ## 3. Pişirme — kabuğun ürettiği son DOM'u al (kural 5, ilk satır)
 
@@ -58,6 +67,10 @@ node "${CLAUDE_SKILL_DIR}/scripts/pisir.mjs" kaynak/ kkp-calisma/pismis --giris 
 - `hatalar` doluysa kaynak zaten hatalı çalışıyor olabilir; not al, hocaya söyle.
 - Kaynak birden çok HTML sayfaysa (bölüm başına dosya) her sayfayı ayrı pişir (`--giris`) ya da hepsini birleştiren bir giriş yoksa
   bölüm bölüm çalış.
+- Gömülü uygulama **tarayıcıda CSS üreten** kütüphane kullanıyorsa (Tailwind Play CDN `cdn.tailwindcss.com`, JIT): CDN script'i pakete
+  giremez. Üretilen CSS'i al: `node "${CLAUDE_SKILL_DIR}/scripts/stil-pisir.mjs" kaynak/ atlas/index.html kkp-calisma/atlas.css
+  --calistir "switchTab('quiz');;toggleTheme()" --tikla ".tab-btn"` (arayüzü gezdir ki JS ile sonradan oluşan sınıflar da üretilsin), embed'e
+  satır içi `<style>` olarak koy; CDN script'ini ve `tailwind.config` bloğunu sil.
 
 ## 4. Dönüşüm — kütüphaneyle kitaba özel script yaz
 
@@ -71,8 +84,13 @@ Sıra ve kütüphane fonksiyonları:
    - Dipnot: `dipnotlariDonustur(html, {desen, metinler})` — metinler JS'teyse oradan çıkar (kural 5: **içerik JS'te kaybolamaz**).
    - Gömülü uygulama: `embedTasi(...)` → `assets/embed/<ad>.html`; kaynakta satır içiyse `<iframe class=… src="assets/embed/x.html"
      sandbox="allow-scripts" width height loading="lazy">`, modaldaysa `embedDialog({...})` statik dialog (kaynağın modal sınıflarıyla —
-     CSS'i tutar) + tetikleyiciye `data-kt-embed-ac="<ad>"`. Yükseklik **ölçülür** (adım 5).
-   - Id'ler: `idKucult` → `basliklariNumarala(html, sayac, harita)` (paket geneli tek sayaç) → `referanslariGuncelle(html, harita)`.
+     CSS'i tutar) + tetikleyiciye `data-kt-embed-ac="<ad>"`. Yükseklik **ölçülür** (adım 5). Embed'in CSS'i **satır içi `<style>`**
+     olur (`embedTasi` bunu yapar): doğrulayıcı `assets/css/*.css` dosyalarını bölüm CSS'i sayıp `.kt-bolum` altına önekler, embed'de
+     `.kt-bolum` yoktur → `<link>`li embed stilsiz açılır. Vendor (Leaflet, Font Awesome, Chart.js) CDN'den indirilip pakete konur
+     (JS `assets/js/embed-<ad>-*.js`, CSS satır içi, yazı tipi `assets/fonts/*.woff2`); vendor JS'te yasak kalıp çıkarsa
+     (`document.defaultView` gibi) küçük yama, ya da CDN bağlantısını bırak (panel indirir, vendor olarak esnek tarar).
+   - Id'ler: `idKucult` (büyük harf VE Türkçe harf: `az-Ç`→`az-cc`; doğrulayıcının `Ç→c` çevirisi mevcut `c` ile çakışır) →
+     `basliklariNumarala(html, sayac, harita)` (paket geneli tek sayaç; başlıklarda id yoksa `idsizBasliklar`) → `referanslariGuncelle(html, harita)`.
    - Sayfa: `bolumSayfasi({...})` — kaynağın sarmalayıcıları (`div.reader > div.paper` gibi) `sarmalayiciAc/Kapa` ile **korunur**.
 3. **Medya:** `medyaReferanslari(html)` → yalnız referans edilenleri kopyala (EMF girmez).
 4. **CSS:** `cssBirlestir({dosyalar: stilSirasi(girisHtml), satirIci: satirIciStiller(girisHtml), idHaritasi: harita, idSecici: {paper:".paper", mainReader:".reader"},
@@ -103,6 +121,10 @@ node "${CLAUDE_SKILL_DIR}/scripts/kanit.mjs" --paket paket/ --pismis kkp-calisma
 eksik kural (CSS `#id` seçicisi yeniden adlandırılan id'ye bağlı mı? `[data-kaynak-id]`e çevir), eksik katman, engellenmemiş script (çift).
 Sonra `onizleme.html`'i (skill klasöründe) tarayıcıda açıp zip'i sürükle: gözle bak — modallar stilli mi, kartlar açılıyor mu, koyu temada?
 
+Notlar: `--ag-kapali` allowlist CDN'leri de reddeder (NET-01); pakette CDN bağlantısı bırakıyorsan lint'i bir de `--ag-kapali`siz koş
+(panel yüklemede indirir) — tercih yerel kopyadır. `kanit`te embed'e ait yazı tipi için `blocked by CORS` konsol hatası görürsen paketin
+hatası değildir: sandbox iframe'in kökeni "null"dür, yerel sunucu CORS başlığı vermez (platform tarafında açık madde); üretim notuna yaz.
+
 ## 7. Teslim
 
 ```bash
@@ -122,3 +144,10 @@ raporu gelirse raporu sana yapıştırır: **yalnız bulguyu düzelt, içerik si
 - `open(` adlı fonksiyon/çağrı, `postMessage`, `location` kelimeleri yorumda bile → red. `jsTara` ile son kontrol.
 - Kaynakta modal olan gömülü uygulamayı karta çevirmek (ya da tersi) → "neden farklı açılıyor?" Aynısını koru.
 - Kaynağın İçindekiler maddelerini (pekiştirme paneli gibi) başlık değil diye atmak → taşı, uyarıyı kabul et.
+- Türkçe harfli id'yi (`az-Ç`, `az-İ`) doğrulayıcıya bırakmak → `az-c`, `az-i` ile çakışır, "İ" paneli "i"yi yutar; `idKucult` benzersiz çevirir.
+- Başlıklarda id yok diye İçindekiler'i boş bırakmak → `idsizBasliklar` + kaynağın hiyerarşisi (section id derinliği).
+- Embed'in CSS'ini `assets/css/` dosyası olarak bağlamak → doğrulayıcı `.kt-bolum`a kapsar, embed stilsiz açılır; satır içi `<style>`.
+- Tailwind CDN'li embed'i olduğu gibi taşımak → CDN reddedilir, çevrim dışı CSS yok; `stil-pisir.mjs` ile üretilen CSS'i al.
+- Canlı servisi (TDK sözlüğü) "veri paketlensin" diye zorlamak ya da sessizce atmak → taşınamadı + hocaya soru + platform önerisi.
+- Satır içi IIFE'nin "hazır" bayrağını pişmiş DOM'da bırakmak → script erken döner, akordeon/düğme çalışmaz (`--temizle "[data-x-ready]"`).
+- `kanit`te küçük bölümde "+%40" farkı kayıp sanmak → kanıt yalnız eksilmeyi sayar; artış sarmalayıcı/section/dialog etiketleridir.
