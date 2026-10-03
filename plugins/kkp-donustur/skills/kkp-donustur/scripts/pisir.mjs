@@ -24,7 +24,9 @@ export function sun(dizin) {
     const yol = decodeURIComponent((req.url || "/").split("?")[0]);
     const tam = path.normalize(path.join(kok, yol.endsWith("/") ? yol + "index.html" : yol));
     if (!tam.startsWith(kok) || !fs.existsSync(tam) || fs.statSync(tam).isDirectory()) { res.writeHead(404); res.end("yok"); return; }
-    res.writeHead(200, { "Content-Type": MIME[path.extname(tam).toLowerCase()] || "application/octet-stream", "Cache-Control": "no-store" });
+    // Access-Control-Allow-Origin: Kitappta içerik sunucusu varlıklara aynı başlığı verir (03.10.2026) — sandbox iframe (köken "null")
+    // içindeki @font-face woff2 istekleri bunsuz CORS'a takılır; kanıt/yükseklik ölçümü platformla aynı davransın.
+    res.writeHead(200, { "Content-Type": MIME[path.extname(tam).toLowerCase()] || "application/octet-stream", "Cache-Control": "no-store", "Access-Control-Allow-Origin": "*" });
     fs.createReadStream(tam).pipe(res);
   });
   return new Promise((coz) => sunucu.listen(0, "127.0.0.1", () => coz({ url: `http://127.0.0.1:${sunucu.address().port}`, kapat: () => sunucu.close() })));

@@ -3,7 +3,7 @@
 ChatGPT ya da Claude ile hazırladığınız etkileşimli kitabı, Kitappta'ya yüklenebilen pakete (kkp/1) kendi bilgisayarınızda çevirirsiniz;
 işi **Claude Code** adlı yapay zekâ aracı yapar, siz yönlendirir ve onaylarsınız. Kitabınızın hiçbir etkileşimi atılmaz (laboratuvar, test,
 kart, dipnot penceresi, gömülü uygulama); çıkan tek şey menü, arama, tema düğmesi gibi Kitappta okuyucusunun zaten verdiği çerçevedir.
-Word dosyası vermek isterseniz Kitappta editörü paketi sizin yerinize üretir; bu kite gerek kalmaz. Sürüm: kural seti v2.3 · kit 03.10.2026 (v0.2.0).
+Word dosyası vermek isterseniz Kitappta editörü paketi sizin yerinize üretir; bu kite gerek kalmaz. Sürüm: kural seti v2.3 · kit 03.10.2026 (v0.2.1).
 
 ## Gerekenler
 

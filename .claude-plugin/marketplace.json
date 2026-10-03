@@ -9,7 +9,7 @@
       "name": "kkp-donustur",
       "source": "./plugins/kkp-donustur",
       "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir (envanter → onay → pişirme → dönüşüm → kkp-lint → kanıt → zip)",
-      "version": "0.2.0"
+      "version": "0.2.1"
     }
   ]
 }

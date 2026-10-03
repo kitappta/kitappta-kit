@@ -122,8 +122,8 @@ eksik kural (CSS `#id` seçicisi yeniden adlandırılan id'ye bağlı mı? `[dat
 Sonra `onizleme.html`'i (skill klasöründe) tarayıcıda açıp zip'i sürükle: gözle bak — modallar stilli mi, kartlar açılıyor mu, koyu temada?
 
 Notlar: `--ag-kapali` allowlist CDN'leri de reddeder (NET-01); pakette CDN bağlantısı bırakıyorsan lint'i bir de `--ag-kapali`siz koş
-(panel yüklemede indirir) — tercih yerel kopyadır. `kanit`te embed'e ait yazı tipi için `blocked by CORS` konsol hatası görürsen paketin
-hatası değildir: sandbox iframe'in kökeni "null"dür, yerel sunucu CORS başlığı vermez (platform tarafında açık madde); üretim notuna yaz.
+(panel yüklemede indirir) — tercih yerel kopyadır. Yazı tipleri (`assets/fonts/*.woff2`) sandbox içinden CORS başlığıyla iner; kanıt
+sunucusu da Kitappta gibi bu başlığı verir — `blocked by CORS` konsol hatası görürsen kit eski demektir, güncelle.
 
 ## 7. Teslim
 
