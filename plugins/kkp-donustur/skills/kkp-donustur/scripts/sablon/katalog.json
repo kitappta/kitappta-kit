@@ -42,6 +42,19 @@
       { "ad": "stix", "etiket": "STIX Two Math", "dosya": "set/yazi/matematik-stix.css", "fontlar": ["stix-two-math"], "durum": "onayli", "neZaman": "Denklem çok ve her cihazda aynı görünmesi önemliyse." }
     ]
   },
+  "harita": {
+    "surum": 1,
+    "dosyalar": { "leaflet": "set/harita/leaflet.js", "motor": "set/harita/harita.js", "stil": "set/harita/harita.css" },
+    "lisanslar": [
+      { "ad": "Leaflet 1.9.4", "lisans": "BSD-2-Clause", "dosya": "set/harita/LISANS-leaflet.txt" },
+      { "ad": "Natural Earth 5.2 (Türkiye bakış açılı sınırlar)", "lisans": "Kamu malı", "dosya": "set/harita/LISANS-natural-earth.txt" }
+    ],
+    "altliklar": [
+      { "ad": "dunya", "etiket": "Dünya", "dosya": "set/harita/altlik-dunya.js", "durum": "onayli", "neZaman": "Dünya ve kıta ölçeğinde gösterim; ülkeler vurgulanır, şehirler işaretlenir. Yakın plan için kaba kalır." },
+      { "ad": "avrasya", "etiket": "Avrasya (ayrıntılı)", "dosya": "set/harita/altlik-avrasya.js", "durum": "onayli", "neZaman": "Avrupa, Asya ve Kuzey Afrika; Türk dünyası, Orta Doğu, Balkanlar, Kafkasya haritaları." },
+      { "ad": "turkiye-iller", "etiket": "Türkiye illeri", "dosya": "set/harita/altlik-turkiye-iller.js", "durum": "onayli", "neZaman": "Türkiye içi konular: 81 il sınırı, il vurgulama, şehir işaretleme; çevre ülkeler soluk bağlam olarak çizilir." }
+    ]
+  },
   "fontlar": {
     "inter": { "aile": "Inter Variable", "lisans": "OFL-1.1", "paket": "@fontsource-variable/inter", "surum": "5.3.0", "dosyalar": [
       { "dosya": "set/fonts/inter-latin-ext-wght-italic.woff2", "ozet": "71254244ccb1ec21e14db3480fef6f6826d1136dc4aca1c7d3ca7ce31294fcce", "bayt": 91900, "stil": "italic", "agirlik": "100 900", "aralik": "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF" },

@@ -9421,11 +9421,17 @@ import { createHash } from "node:crypto";
 
 // packages/kkp/src/set-ozetleri.ts
 var SET_OZETLERI = {
+  "a0a65132bc193b9dedf1286058f450cc8080764cb275801bb9bd7ae807a50bb0": "altlık avrasya",
+  "c8097d3a6ad729ea8a52924a9433f62b5d50b41551dd57e9025fc8b49f674650": "altlık dunya",
+  "8ca7c1ad860a2da54259e261efdc1d2a1ac68063e23caedef87b6704ccc24fbf": "altlık turkiye-iller",
   "c5f145eadb15fa3e2cc53a2c3846ecbedd0291512a1dbb7b00f12b88eea8efed": "görünüm akademik",
   "aca8c499969bb17c242ab041f70abd1f8e8b65737f949885b9bc55a95f2cef9d": "görünüm ders-notu",
   "3584bcbb8e296641a800af77719cf583e8d817872858db974a3077115e1ddefa": "görünüm kompakt",
   "9ef2ba88b65f46baa3d7c24aacf7a947170ec6de520cf4bbc144a57924bb6589": "görünüm pedagojik-kart",
   "cca6e793ddd2447b687b5fde72b54efba82f40152969de9e553b4bbcca970740": "görünüm teknik",
+  "98bb3ac1b95d57b147c7f1f2f18ae49825ae5307d16de14d3f23f599eb305ac1": "harita kartı",
+  "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a": "harita kartı",
+  "fc20ce6c072e18eba9d9b010cdfe165bd797811153be6d7472d5863cb4a3a1f2": "harita kartı",
   "86647bfc506528d8d3253afa5f1da0efc48e5729bad18223af17810e94b949fb": "kart cerceveli",
   "3080da4ae34bed1b148c163b12531ee2eb6d2020d60c1f7ecfc0b46b0d7069fc": "kart dolgulu",
   "31684dec0c01f56501617b11fcae9405a3a4825c581fde1406d1548a968d215c": "matematik stix",
@@ -42772,7 +42778,7 @@ async function dogrulaIc(girdi, secenekler, t, baslangic) {
     const cssBaytlari = paket.dosyalar.get(yol);
     const ozetAl = (b) => createHash("sha256").update(b).digest("hex");
     const setEtiketi = cssBaytlari ? SET_OZETLERI[ozetAl(cssBaytlari)] ?? (metin.includes("\r\n") ? SET_OZETLERI[ozetAl(Buffer.from(metin.replace(/\r\n/g, "\n"), "utf8"))] : void 0) : void 0;
-    if (setEtiketi) kitapptaSeti.push(setEtiketi);
+    if (setEtiketi && !kitapptaSeti.includes(setEtiketi)) kitapptaSeti.push(setEtiketi);
     const yeni = await cssIsle(metin, { yol, listeyeEkle, setDosyasi: setEtiketi !== void 0 }, paket);
     if (yeni !== null) paket.yaz(yol, yeni);
   }
@@ -42806,6 +42812,13 @@ async function dogrulaIc(girdi, secenekler, t, baslangic) {
       continue;
     }
     const metin = paket.metin(yol) ?? "";
+    const jsBaytlari = paket.dosyalar.get(yol);
+    const jsOzeti = (b) => createHash("sha256").update(b).digest("hex");
+    const jsSetEtiketi = jsBaytlari ? SET_OZETLERI[jsOzeti(jsBaytlari)] ?? (metin.includes("\r\n") ? SET_OZETLERI[jsOzeti(Buffer.from(metin.replace(/\r\n/g, "\n"), "utf8"))] : void 0) : void 0;
+    if (jsSetEtiketi !== void 0) {
+      if (!kitapptaSeti.includes(jsSetEtiketi)) kitapptaSeti.push(jsSetEtiketi);
+      continue;
+    }
     const kaynakUrl = vendorMu ? paket.indirici.kaynakUrl(yol) : void 0;
     const tarama = jsTara(metin, { yol, vendorMu, bolumJsMi: listede && !inlineMi, embedMi, ...kaynakUrl !== void 0 ? { kaynakUrl } : {} }, paket);
     let yeni = tarama.cikti;

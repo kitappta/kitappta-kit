@@ -5,7 +5,7 @@ allowed-tools: Bash(node *) Bash(npm *) Bash(npx *) Bash(python3 *) Bash(${CLAUD
 ---
 # kkp-donustur — hazır HTML kitabı Kitappta paketine kayıpsız çevir
 
-Tek doğruluk kaynağı **[kural-seti.md](kural-seti.md)** (v2.3). Bu skill kuralları tekrar etmez; iş sırasını ve araçları verir.
+Tek doğruluk kaynağı **[kural-seti.md](kural-seti.md)** (v2.4). Bu skill kuralları tekrar etmez; iş sırasını ve araçları verir.
 Spesifikasyon [kkp-v1.md](kkp-v1.md). Kesin kapı **kkp-lint** (`${CLAUDE_SKILL_DIR}/scripts/kkp-lint.js` — Kitappta panelinin yüklemede
 koşturduğu doğrulayıcının aynısı).
 
@@ -53,7 +53,8 @@ Kaynağı okurken şunlara karar ver (karar tablosunu üretim notuna yazacaksın
 - **Canlı servis var mı?** (TDK sözlüğü `sozluk.gov.tr`, hava durumu, döviz, harita karoları, herhangi bir API) → okuyucuda ağ yok
   (`connect-src 'none'`), `fetch` yasak. Veri paketlenebiliyorsa paketle (`veri-<ad>.js`); paketlenemiyorsa (bütün sözlük) **taşınamadı**:
   envantere yaz, hocaya sor, üretim notuna "Kitappta platform özelliği olarak önerilir" yaz. Kitaba özel taklit yazma. Harita karoları
-  yerine paketlenebilir temel katman (ülke sınırları) olur.
+  yerine **Kitappta altlığı** kullanılır (`scripts/sablon/set/harita/altlik-*.js`; kural setindeki "Harita karoları" satırı) — başka
+  sınır verisi indirme: hazır dünya haritası paketleri Kırım'ı Rusya'da, Golan'ı İsrail'de çizer.
 - **Sayfanın içindeki satır içi `<script>` katmanları** (A–Z akordeonu, "doğrusunu göster" gibi IIFE'ler): `--engelle` ile durdurulamaz
   (dosya değil). Pişirmede bıraktıkları "hazır" bayrağını `--temizle "[data-x-ready]"` ile sil; script'i `kitap.js`'e **idempotent** al
   (ikinci koşuda etiket/düğme çift eklemesin — `if(!el.querySelector('.etiket'))`), `kt:hazir`a bağla.
@@ -211,6 +212,21 @@ node "${CLAUDE_SKILL_DIR}/scripts/bolum-metni.mjs" kkp-calisma/paket kkp-calisma
   ```bash
   node "${CLAUDE_SKILL_DIR}/scripts/kutu-isaretle.mjs" kkp-calisma/paket kkp-calisma/kutu
   ```
+- **Harita kartı — yalnız Kitappta altlıklarıyla.** Metin bir coğrafyayı anlatıyorsa (yayılım alanı, ülkeler, iller, güzergâh) ve harita
+  anlatımı kolaylaştırıyorsa ekle; süs için ekleme. Altlıklar: `dunya`, `avrasya` (Türk dünyası, Orta Doğu, Balkanlar; yakın plan),
+  `turkiye-iller` (`--altliklar` listeler). Yer kodlarını tahmin etme: `--kodlar <altlık>` (ülkeler `TUR`, `AZE`…; KKTC `CYN`, Kosova `KOS`,
+  Filistin `PSX`; iller `TR-06`). Spec `kkp-calisma/harita/bNN-<ad>.json`:
+  `{ "bolum": "b04", "yer": { "sonra": "p0012" }, "baslik": "Harita 4.1: …", "altlik": "avrasya", "gruplar": [{ "ad": "oguz", "etiket": "Oğuz" }],
+  "vurgu": [{ "k": ["TUR", "AZE"], "grup": "oguz" }], "isaretciler": [{ "ad": "Ankara", "konum": [39.93, 32.86], "metin": "…", "grup": "oguz" }],
+  "alanlar": [{ "ad": "Yayılım alanı", "noktalar": [[41.5, 26], [56.5, 50], [43, 90]], "kesik": true }] }` — `konum` **[enlem, boylam]**;
+  yalnız metinde adı geçen yerler; işaretçi metni kaynaktaki cümle.
+  ```bash
+  node "${CLAUDE_SKILL_DIR}/scripts/harita-ekle.mjs" kkp-calisma/paket kkp-calisma/harita
+  ```
+  Araç kartı kurar, işaretçileri metin listesi olarak da yazar, altlığı ve Leaflet'i pakete koyar; hatalı spec'te hiçbir dosyaya dokunmaz.
+  `UYARI` satırı ters yazılmış konumu gösterir — düzelt. Kartı değiştirmek için spec'e çıktıdaki id'yi yaz (`"id": "sek0007"`) ve yeniden koş.
+  Sınırlar ve yer adları altlıktan gelir (Türkiye'nin bakış açısıyla çizilmiştir), **değiştirilmez**; karo (sokak / uydu), dış harita
+  servisi ve başka sınır verisi yok. Katalogda olmayan bir altlık gerekiyorsa (ilçeler, tarihî sınırlar) harita ekleme, üretim notuna yaz.
 - **Görünüm — yalnız Kitappta setinden.** Yazı, renk ve kart biçimi `scripts/sablon/katalog.json`'daki seçeneklerden seçilir: hazır
   takımlar (`hukuk`, `dil`, `kart`, `teknik`, `sosyal`, `ozet`) ve altı eksen (yazı takımı, görünüm, kart biçimi, yoğunluk, renk ailesi,
   matematik yazısı). Kitabın türüne göre **bir takım öner, hocaya onaylat**; görmek isterse önizlemeyi üret:

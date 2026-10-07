@@ -1,6 +1,6 @@
 {
   "name": "kkp-donustur",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Hazır etkileşimli HTML kitabı Kitappta kkp/1 paketine kayıpsız çevirir; Word ya da notlardan yeni kitap üretir",
   "author": {
     "name": "Kitappta"

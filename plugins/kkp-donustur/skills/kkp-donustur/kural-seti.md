@@ -1,4 +1,4 @@
-# kkp/1 Hoca Kural Seti — yapay zekâ aracına verilecek üretim ve dönüşüm kuralları (v2.3, 03.10.2026)
+# kkp/1 Hoca Kural Seti — yapay zekâ aracına verilecek üretim ve dönüşüm kuralları (v2.4, 07.10.2026)
 
 > Bu belge **kendi kendine yeter**: yanında dosya, şablon ya da örnek paket yoktur; örnekler metnin içindedir. Hocanın kendi yapay
 > zekâ aracına (ChatGPT, Claude, Gemini, bir kodlama agent'ı …) **olduğu gibi** verilir: sohbete yapıştırılır, proje / özel talimat
@@ -144,7 +144,7 @@ B yolunun çekirdeği. Her satır önceki vakada gerçekten karşılaşılan bir
 | EMF/WMF görsel, `.docx`/`.md`/`.txt` yardımcı dosyalar, `denetim/` raporları | Pakete girmez; PNG kopyası varsa o kullanılır; yoksa üretim notuna "ELLE" yazılır. |
 | Gömülü uygulamanın **kendi CSS dosyaları** (`<link href="x.css">`; Leaflet, Font Awesome CSS'i) | Gömülü belgeye **satır içi `<style>`**. Doğrulayıcı `assets/css/*.css` dosyalarını bölüm CSS'i sayıp `.kt-bolum` altına kapsar; gömülü belgede `.kt-bolum` yoktur, bağlı dosya stil vermez. Yazı tipi `assets/fonts/*.woff2`, görsel `assets/media/`; `url()` yolları embed konumuna göre `../fonts/…`, `../media/…`. |
 | Gömülü uygulama **tarayıcıda CSS üreten** kütüphane kullanıyor (Tailwind Play CDN `cdn.tailwindcss.com`, JIT) | CDN script'i pakete giremez (allowlist dışı) ve çevrim dışı çalışmaz. Sayfayı tarayıcıda aç, arayüzü gezdir (sekmeler, tema, filtre — sonradan oluşan sınıflar da üretilsin), **üretilen CSS'i al** ve gömülü belgeye satır içi koy; CDN script'ini ve `tailwind.config`'i sil. |
-| Harita karoları, uydu görüntüsü, dış görsel servisi (`L.tileLayer('https://…')`) | Okuyucu dış görsel almaz (`img-src` yalnız paket). Yerine paketlenebilir temel katman: ülke sınırları (Natural Earth 110m TopoJSON ~100 KB, `assets/js/veri-<ad>.js`) ya da statik harita görseli; işaretçi/çokgen/odaklama aynen. Üretim notuna yaz. |
+| Harita karoları, uydu görüntüsü, dış görsel servisi (`L.tileLayer('https://…')`) | Okuyucu dış görsel almaz (`img-src` yalnız paket). Yerine **Kitappta altlığı** (Dünya, Avrasya, Türkiye illeri): Kitappta `kkp-donustur` kitinin `set/harita` klasöründeki `altlik-<dunya \| avrasya \| turkiye-iller>.js` dosyasını `assets/js/set-altlik-<ad>.js`, `harita.js`'i `assets/js/set-harita.js` olarak **değiştirmeden** kopyala (kit elinde yoksa dosyaları Kitappta'dan iste), gömülü belgede Leaflet'ten sonra yükle; `window.__ktHarita.topoCoz(window.__ktAltlik["<ad>"].topo, "ulkeler")` (illerde `"iller"`) GeoJSON özelliklerini verir (`properties.k` kod, `.ad` Türkçe ad) → `L.geoJSON(...)`. **Başka sınır verisi indirme:** Natural Earth'ün varsayılan dosyaları ve ondan türeyen hazır paketler Kırım'ı Rusya'da, Golan'ı İsrail'de çizer; Kitappta altlıkları Türkiye bakış açılı dosyadan üretilmiştir. İşaretçi / çokgen / odaklama aynen. Üretim notuna yaz. |
 | Başlıkların id'si yok; kaynağın İçindekiler'i `section` id'lerine bağlı (`s-3-1-1-1`) | Her başlığa `hNNNN` ver; İçindekiler'i kaynağın hiyerarşisiyle kur (section id derinliği = seviye). Derinlik sınırı yok; okuyucu çizer. |
 | Türkçe harfli id (`az-Ç`, `bolum-İ`) | Doğrulayıcı `Ç→c, İ→i, Ş→s, Ü→u` çevirir ve mevcut `c/i/s/u` id'leriyle **çakışır** ("İ" paneli "i" panelini yutar). Sen çevir, benzersiz tut (`az-cc`, `az-ii`, `az-ss`, `az-uu`); `href="#…"` ve `aria-controls` birlikte; JS id'yi öznitelikten okuyorsa aynen çalışır. |
 | **Canlı servis** aracı: TDK sözlüğü (`sozluk.gov.tr`), döviz, hava durumu, herhangi bir API | Taşınamaz: okuyucuda ağ kapalı (`connect-src 'none'`), veri paketlenemez (bütün sözlük). Kitaba özel taklit yazma; envantere **taşınamadı**, hocaya sor, üretim notuna "Kitappta platform özelliği olarak önerilir" yaz. |
@@ -555,6 +555,9 @@ dialog.site-dialog::backdrop{background:rgba(7,14,24,.86)}` eklenir.
 ---
 
 **Sürüm notları**
+- v2.4 (07.10.2026, Plan 38) — harita: karo yerine **Kitappta altlığı** (Dünya, Avrasya, Türkiye illeri; `kkp-donustur` kitinin `set/harita` klasöründe).
+  Başka sınır verisi indirilmez: Natural Earth'ün varsayılan dosyaları ve ondan türeyen hazır paketler Kırım'ı Rusya'da, Golan'ı İsrail'de
+  çizer; Kitappta altlıkları Türkiye bakış açılı dosyadan üretilmiştir. Yeni kitapta (Yol A) harita `harita-ekle` aracıyla eklenir.
 - v2.3 (03.10.2026) — ikinci kitap testi: hocanın "Türk Dili I" (V250) kitabı Hasan'ın isteğiyle `kkp-donustur` skill'iyle sıfırdan
   çevrildi (10 bölüm, 198 başlık, 1389 örnek çipi, A–Z dizini, "doğrusunu göster", Tailwind + Leaflet atlası modalda; kkp-lint 0 hata,
   kanıt GEÇTİ, okuyucu laboratuvarında kaynakla eleman eleman eşit). Kural 5 tablosuna yedi satır: gömülü uygulama CSS'i satır içi
