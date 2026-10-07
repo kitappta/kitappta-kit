@@ -1,0 +1,9 @@
+/* Kitappta seti — görünüm: Teknik (scripts/kkp/sablon/set/gorunum/teknik.css). Denklem satırı ve şekil çerçeveli, kod bloğu belirgin, tablo sıkı;
+   iktisat, matematik, mühendislik. */
+.kt-bolum{--kitap-olcu:60rem}
+.kt-bolum h2{padding-bottom:.25em;border-bottom:1px solid var(--kt-border,#dce5f3)}
+.kt-bolum .kt-esitlik{padding:.7em 1em;border:1px solid var(--kt-border,#dce5f3);border-radius:var(--kitap-kose,.4rem);background:var(--kt-surface,#f7f9fd)}
+.kt-bolum figure{padding:1em;border:1px solid var(--kt-border,#dce5f3);border-radius:var(--kitap-kose,.4rem);background:var(--kt-bg,#ffffff)}
+.kt-bolum pre{border-inline-start:3px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));font-size:.85em}
+.kt-bolum table{font-size:.9em}
+.kt-bolum th,.kt-bolum td{padding:.35em .6em}

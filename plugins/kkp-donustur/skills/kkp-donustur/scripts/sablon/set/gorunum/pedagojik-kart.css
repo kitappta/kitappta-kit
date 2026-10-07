@@ -1,0 +1,6 @@
+/* Kitappta seti — görünüm: Pedagojik kart (scripts/kkp/sablon/set/gorunum/pedagojik-kart.css). Her paragraf ve liste ayrı bir karttır (paragraf bilgi
+   tonunda, liste başarı tonunda şeritli); tablo başlığı vurgu zeminli. Paragraf id'leri değişmez. */
+.kt-bolum{--kitap-olcu:56rem}
+.kt-bolum>p:not(.kt-esitlik){padding:var(--kitap-kutu-ic,1em 1.2em);border-inline-start:var(--kitap-kutu-serit,4px) solid var(--kitap-tur-tanim,var(--kitap-vurgu,var(--kt-accent,#0b66f6)));border-radius:var(--kitap-kose,.4rem);background:var(--kt-surface,#f7f9fd)}
+.kt-bolum>ul,.kt-bolum>ol{padding:var(--kitap-kutu-ic,1em 1.2em);padding-inline-start:2.8em;border-inline-start:var(--kitap-kutu-serit,4px) solid var(--kitap-tur-ornek,var(--kitap-vurgu,var(--kt-accent,#0b66f6)));border-radius:var(--kitap-kose,.4rem);background:var(--kt-surface,#f7f9fd)}
+.kt-bolum th{background:var(--kitap-vurgu,var(--kt-accent,#0b66f6));border-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6));color:var(--kt-bg,#ffffff)}

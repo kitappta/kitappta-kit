@@ -1,23 +1,25 @@
-/* kkp/1 — Kitappta kitap taban CSS'i (scripts/kkp/sablon/kitap.css, v1.0 05.09.2026). Her yeni kitabın assets/css/kitap.css'i bu dosyadır;
+/* kkp/1 — Kitappta kitap taban CSS'i (scripts/kkp/sablon/kitap.css, v1.1 05.10.2026). Her yeni kitabın assets/css/kitap.css'i bu dosyadır;
    kitaba özgü ek kurallar assets/css/bolum-NN.css'e yazılır. Kurallar (kkp-v1-uretim-talimati.md §2, §6): yalnız .kt-bolum altında;
    renkler --kt-* token'larıyla (değerleri okuyucu verir: açık/koyu/sepya) — tema kuralı ve sabit renk YOK; okuma sütunu paketindir
    (.kt-bolum max-width); --kt-olcek kullanılmaz, boyutlar rem/em; position:fixed/sticky, @import, url() yok.
    Her token'ın yanındaki yedek değer (var(--kt-fg,#0b1e43)) okuyucu DIŞINDA — hoca dosyaya çift tıklayıp yerelde açtığında — açık tema
-   renklerini verir; okuyucuda platform token'ı kazanır. Token TANIMLANMAZ (:root yok), yalnız yedekli okunur. */
-.kt-bolum{box-sizing:border-box;max-width:64rem;margin-inline:auto;padding:1.5rem clamp(1rem,4vw,3.5rem) 4rem;font-family:var(--kt-font-metin,Georgia,"Times New Roman",serif);font-size:1.0625rem;line-height:1.65;color:var(--kt-fg,#0b1e43);overflow-wrap:break-word}
+   renklerini verir; okuyucuda platform token'ı kazanır. Token TANIMLANMAZ (:root yok), yalnız yedekli okunur.
+   v1.1 (Plan 35 — ortak tasarım seti): biçim değerleri --kitap-* değişkenlerinden okunur; her birinin yedeği v1.0'daki değerdir, set
+   dosyası (assets/css/set-*.css) yoksa görünüm değişmez. Set dosyaları yalnız --kitap-* tanımlar; --kt-* hiçbir yerde tanımlanmaz. */
+.kt-bolum{box-sizing:border-box;max-width:var(--kitap-olcu,64rem);margin-inline:auto;padding:1.5rem clamp(1rem,4vw,3.5rem) 4rem;font-family:var(--kitap-font-metin,var(--kt-font-metin,Georgia,"Times New Roman",serif));font-size:var(--kitap-punto,1.0625rem);line-height:var(--kitap-satir,1.65);color:var(--kt-fg,#0b1e43);overflow-wrap:break-word}
 .kt-bolum *,.kt-bolum *::before,.kt-bolum *::after{box-sizing:inherit}
-.kt-bolum h1,.kt-bolum h2,.kt-bolum h3,.kt-bolum h4{font-family:var(--kt-font-baslik,Georgia,"Times New Roman",serif);line-height:1.25;text-wrap:balance;margin:2em 0 .6em;color:var(--kt-fg,#0b1e43)}
+.kt-bolum h1,.kt-bolum h2,.kt-bolum h3,.kt-bolum h4{font-family:var(--kitap-font-baslik,var(--kt-font-baslik,Georgia,"Times New Roman",serif));line-height:1.25;text-wrap:balance;margin:2em 0 .6em;color:var(--kitap-baslik-renk,var(--kt-fg,#0b1e43))}
 .kt-bolum h1{font-size:1.9em;margin-top:.5em;padding-bottom:.4em;border-bottom:2px solid var(--kt-border,#dce5f3)}
 .kt-bolum h2{font-size:1.45em}
 .kt-bolum h3{font-size:1.2em}
 .kt-bolum h4{font-size:1.05em}
-.kt-bolum p{margin:0 0 1em}
-.kt-bolum a{color:var(--kt-accent,#0b66f6);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+.kt-bolum p{margin:0 0 var(--kitap-aralik,1em)}
+.kt-bolum a{color:var(--kitap-vurgu,var(--kt-accent,#0b66f6));text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
 .kt-bolum a:hover{text-decoration-thickness:2px}
-.kt-bolum ul,.kt-bolum ol{padding-inline-start:1.6em;margin:0 0 1em}
+.kt-bolum ul,.kt-bolum ol{padding-inline-start:1.6em;margin:0 0 var(--kitap-aralik,1em)}
 .kt-bolum li{margin:.25em 0}
 .kt-bolum li>p{margin-bottom:.4em}
-.kt-bolum blockquote{margin:1.2em 0;padding:.6em 1.2em;border-inline-start:4px solid var(--kt-accent,#0b66f6);background:var(--kt-surface,#f7f9fd);color:var(--kt-fg,#0b1e43)}
+.kt-bolum blockquote{margin:1.2em 0;padding:.6em 1.2em;border-inline-start:4px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));background:var(--kt-surface,#f7f9fd);color:var(--kt-fg,#0b1e43)}
 .kt-bolum blockquote>:last-child{margin-bottom:0}
 .kt-bolum pre{overflow-x:auto;padding:1em;background:var(--kt-surface,#f7f9fd);border:1px solid var(--kt-border,#dce5f3);border-radius:.4rem;font-size:.9em}
 .kt-bolum .underline{text-decoration:underline}
@@ -27,7 +29,7 @@
 .kt-bolum .kt-sol{text-align:left}
 
 /* Matematik */
-.kt-bolum math{font-family:var(--kt-font-math,"Cambria Math","STIX Two Math",serif)}
+.kt-bolum math{font-family:var(--kitap-font-math,var(--kt-font-math,"Cambria Math","STIX Two Math",serif))}
 .kt-bolum .kt-esitlik{display:flex;align-items:center;gap:1rem;margin:1.2em 0;overflow-x:auto}
 .kt-bolum .kt-esitlik math[display="block"]{flex:1 1 auto;margin:0;text-align:center}
 .kt-bolum .kt-eq-no{flex:0 0 auto;color:var(--kt-muted,#5e6d88);font-variant-numeric:tabular-nums}
@@ -45,14 +47,37 @@
 .kt-bolum td>p:last-child,.kt-bolum th>p:last-child{margin-bottom:0}
 
 /* Daima açık kutu ve açılır kart (kural 4) */
-.kt-bolum .kt-kutu{margin:1.4em 0;padding:1em 1.2em;border:1px solid var(--kt-border,#dce5f3);border-inline-start:4px solid var(--kt-accent,#0b66f6);border-radius:.4rem;background:var(--kt-surface,#f7f9fd)}
+.kt-bolum .kt-kutu{margin:1.4em 0;padding:var(--kitap-kutu-ic,1em 1.2em);border:var(--kitap-kutu-kenar,1px solid var(--kt-border,#dce5f3));border-inline-start:var(--kitap-kutu-serit,4px) solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));border-radius:var(--kitap-kose,.4rem);background:var(--kitap-kutu-zemin,var(--kt-surface,#f7f9fd))}
 .kt-bolum .kt-kutu>:last-child{margin-bottom:0}
-.kt-bolum .kt-kart{margin:1.4em 0;border:1px solid var(--kt-border,#dce5f3);border-radius:.5rem;background:var(--kt-surface,#f7f9fd)}
+.kt-bolum .kt-kart{margin:1.4em 0;border:var(--kitap-kutu-kenar,1px solid var(--kt-border,#dce5f3));border-radius:var(--kitap-kose,.5rem);background:var(--kitap-kutu-zemin,var(--kt-surface,#f7f9fd))}
 .kt-bolum .kt-kart>summary{cursor:pointer;padding:.8em 1.2em;font-weight:600;list-style:none;display:flex;align-items:center;gap:.6em}
 .kt-bolum .kt-kart>summary::-webkit-details-marker{display:none}
-.kt-bolum .kt-kart>summary::before{content:"";flex:0 0 auto;width:.5em;height:.5em;border-right:2px solid var(--kt-accent,#0b66f6);border-bottom:2px solid var(--kt-accent,#0b66f6);transform:rotate(-45deg);transition:transform .2s}
+.kt-bolum .kt-kart>summary::before{content:"";flex:0 0 auto;width:.5em;height:.5em;border-right:2px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));border-bottom:2px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));transform:rotate(-45deg);transition:transform .2s}
 .kt-bolum .kt-kart[open]>summary::before{transform:rotate(45deg)}
 .kt-bolum .kt-kart-govde{padding:.6em 1.2em 1.2em;border-top:1px solid var(--kt-border,#dce5f3)}
+
+/* Kart ailesi (v1.1): div.kt-kutu.kt-kutu--<tur>; açılır kartta details.kt-kart.kt-kutu--<tur>. Tür rengi --kitap-tur: renk ailesi dosyası
+   --kitap-tur-<tur> verir, vermezse vurgu rengi. Zemin tür renginin --kitap-tur-ton kadarıdır (kart biçimi dosyası ayarlar). Etiket gerçek
+   metindir (kutunun ilk çocuğu p.kt-kutu-etiket); CSS content ile basılmaz. Türsüz .kt-kutu v1.0'daki gibi görünür. Etiket rengi tür
+   renginin %78'i + metin rengidir: küçük kalın yazı renkli zeminde 4.5:1'i tutsun diye (platform mavisi tek başına 4.0–4.2'de kalıyor). */
+.kt-bolum .kt-kutu--tanim{--kitap-tur:var(--kitap-tur-tanim,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--kural{--kitap-tur:var(--kitap-tur-kural,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--uyari{--kitap-tur:var(--kitap-tur-uyari,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--not{--kitap-tur:var(--kitap-tur-not,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--ornek{--kitap-tur:var(--kitap-tur-ornek,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--ozet{--kitap-tur:var(--kitap-tur-ozet,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--ipucu{--kitap-tur:var(--kitap-tur-ipucu,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--hata{--kitap-tur:var(--kitap-tur-hata,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--sonuc{--kitap-tur:var(--kitap-tur-sonuc,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--karsilastirma{--kitap-tur:var(--kitap-tur-karsilastirma,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--olay{--kitap-tur:var(--kitap-tur-olay,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--kazanim{--kitap-tur:var(--kitap-tur-kazanim,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--teorem{--kitap-tur:var(--kitap-tur-teorem,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--alistirma{--kitap-tur:var(--kitap-tur-alistirma,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu--cozum{--kitap-tur:var(--kitap-tur-cozum,var(--kitap-vurgu,var(--kt-accent,#0b66f6)))}
+.kt-bolum .kt-kutu[class*="kt-kutu--"]{border-inline-start-color:var(--kitap-tur);background:color-mix(in srgb,var(--kitap-tur) var(--kitap-tur-ton,8%),var(--kitap-kutu-zemin,var(--kt-surface,#f7f9fd)))}
+.kt-bolum .kt-kart[class*="kt-kutu--"]>summary::before{border-color:var(--kitap-tur)}
+.kt-bolum .kt-kutu-etiket{margin:0 0 .35em;font-family:var(--kitap-font-baslik,var(--kt-font-baslik,Georgia,"Times New Roman",serif));font-size:.8em;font-weight:700;letter-spacing:.04em;line-height:1.3;color:color-mix(in srgb,var(--kitap-tur,var(--kitap-vurgu,var(--kt-accent,#0b66f6))) 78%,var(--kt-fg,#0b1e43))}
 
 /* Dipnotlar (numara ve ↩ okunu okuyucu basar) */
 .kt-bolum .kt-dipnotlar{margin-top:3em;padding-top:1em;border-top:1px solid var(--kt-border,#dce5f3);font-size:.9em;color:var(--kt-muted,#5e6d88)}
@@ -66,11 +91,11 @@
 
 /* Etkileşim yüzeyi: düğme, girdi, tuval */
 .kt-bolum button{font:inherit;font-size:.95em;padding:.5em 1em;border:1px solid var(--kt-border,#dce5f3);border-radius:.4rem;background:var(--kt-surface,#f7f9fd);color:var(--kt-fg,#0b1e43);cursor:pointer;min-height:2.75rem;touch-action:manipulation}
-.kt-bolum button:hover{border-color:var(--kt-accent,#0b66f6)}
+.kt-bolum button:hover{border-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
 .kt-bolum button:disabled{opacity:.45;cursor:default}
-.kt-bolum button:focus-visible,.kt-bolum input:focus-visible,.kt-bolum select:focus-visible,.kt-bolum summary:focus-visible,.kt-bolum .kt-flash-kart:focus-visible{outline:2px solid var(--kt-accent,#0b66f6);outline-offset:2px}
-.kt-bolum .kt-birincil{background:var(--kt-accent,#0b66f6);color:var(--kt-bg,#ffffff);border-color:var(--kt-accent,#0b66f6)}
-.kt-bolum input[type="range"]{width:100%;accent-color:var(--kt-accent,#0b66f6)}
+.kt-bolum button:focus-visible,.kt-bolum input:focus-visible,.kt-bolum select:focus-visible,.kt-bolum summary:focus-visible,.kt-bolum .kt-flash-kart:focus-visible{outline:2px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));outline-offset:2px}
+.kt-bolum .kt-birincil{background:var(--kitap-vurgu,var(--kt-accent,#0b66f6));color:var(--kt-bg,#ffffff);border-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
+.kt-bolum input[type="range"]{width:100%;accent-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
 .kt-bolum input[type="number"],.kt-bolum input[type="text"],.kt-bolum select{font:inherit;padding:.4em .6em;border:1px solid var(--kt-border,#dce5f3);border-radius:.3rem;background:var(--kt-bg,#ffffff);color:var(--kt-fg,#0b1e43)}
 .kt-bolum label{cursor:pointer}
 .kt-bolum canvas{max-width:100%;height:auto;display:block;margin:0 auto;border:1px solid var(--kt-border,#dce5f3);border-radius:.4rem;background:var(--kt-bg,#ffffff)}
@@ -88,12 +113,12 @@
 .kt-bolum .kt-secenekler li{margin:.3em 0}
 .kt-bolum .kt-secenekler label{display:flex;gap:.6em;align-items:flex-start;padding:.45em .6em;border-radius:.4rem;border:1px solid transparent}
 .kt-bolum .kt-secenekler label:hover{border-color:var(--kt-border,#dce5f3)}
-.kt-bolum .kt-secenekler input{accent-color:var(--kt-accent,#0b66f6);margin-top:.3em;flex:0 0 auto}
-.kt-bolum fieldset.kt-dogru .kt-dogru-secenek>label,.kt-bolum fieldset.kt-yanlis .kt-dogru-secenek>label{border-color:var(--kt-accent,#0b66f6);font-weight:600}
+.kt-bolum .kt-secenekler input{accent-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6));margin-top:.3em;flex:0 0 auto}
+.kt-bolum fieldset.kt-dogru .kt-dogru-secenek>label,.kt-bolum fieldset.kt-yanlis .kt-dogru-secenek>label{border-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6));font-weight:600}
 .kt-bolum fieldset.kt-yanlis .kt-secili>label{text-decoration:line-through;color:var(--kt-muted,#5e6d88)}
 .kt-bolum .kt-geri-bildirim{margin-top:.6em;padding:.5em .8em;border-radius:.4rem;border:1px solid var(--kt-border,#dce5f3)}
 .kt-bolum .kt-geri-bildirim:empty{display:none}
-.kt-bolum fieldset.kt-dogru .kt-geri-bildirim{border-color:var(--kt-accent,#0b66f6);background:color-mix(in srgb,var(--kt-accent,#0b66f6) 12%,var(--kt-bg,#ffffff))}
+.kt-bolum fieldset.kt-dogru .kt-geri-bildirim{border-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6));background:color-mix(in srgb,var(--kitap-vurgu,var(--kt-accent,#0b66f6)) 12%,var(--kt-bg,#ffffff))}
 .kt-bolum fieldset.kt-yanlis .kt-geri-bildirim{border-color:var(--kt-muted,#5e6d88)}
 .kt-bolum .kt-quiz-kontrol{margin:.4em 0}
 .kt-bolum .kt-skor{font-weight:600}

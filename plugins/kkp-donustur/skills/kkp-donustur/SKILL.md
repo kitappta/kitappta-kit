@@ -203,8 +203,24 @@ node "${CLAUDE_SKILL_DIR}/scripts/bolum-metni.mjs" kkp-calisma/paket kkp-calisma
   ```bash
   node "${CLAUDE_SKILL_DIR}/scripts/lab-ekle.mjs" kkp-calisma/paket kkp-calisma/lab
   ```
-- Hoca kendi görünümünü isterse: `assets/css/kitap.css` şablonunun **sonuna** ek kural (platform token'ları `var(--kt-*)` ile; sabit
-  renk uyarı alır). Şablon dosyalarını değiştirme.
+- **Kart türleri** (tanım, kural, uyarı, örnek, özet, sık yapılan hata…): dönüştürücü "Örnek 2.1:", "Uyarı:" diye başlayan paragrafları
+  türüyle kutuya alır; kalanını `kkp-calisma/kutu/bNN.json` ile sen işaretlersin — yalnız metinde zaten o işlevi gören bloklar:
+  `[ { "bolum": "b02", "bloklar": ["p0012", "p0013"], "tur": "tanim", "etiket": "Tanım" } ]` (`bloklar` ardışık blok id'leri ya da tek
+  bir kutu id'si; türler: `tanim kural uyari not ornek ozet ipucu hata sonuc karsilastirma olay kazanim teorem alistirma cozum`;
+  satır zaten "Örnek 3:" diye başlıyorsa `etiket` verme).
+  ```bash
+  node "${CLAUDE_SKILL_DIR}/scripts/kutu-isaretle.mjs" kkp-calisma/paket kkp-calisma/kutu
+  ```
+- **Görünüm — yalnız Kitappta setinden.** Yazı, renk ve kart biçimi `scripts/sablon/katalog.json`'daki seçeneklerden seçilir: hazır
+  takımlar (`hukuk`, `dil`, `kart`, `teknik`, `sosyal`, `ozet`) ve altı eksen (yazı takımı, görünüm, kart biçimi, yoğunluk, renk ailesi,
+  matematik yazısı). Kitabın türüne göre **bir takım öner, hocaya onaylat**; görmek isterse önizlemeyi üret:
+  `node "${CLAUDE_SKILL_DIR}/scripts/set-onizleme.mjs" kkp-calisma/onizleme` (çift tıklanır, üç temada gösterir). Sonra:
+  ```bash
+  node "${CLAUDE_SKILL_DIR}/scripts/gorunum-ekle.mjs" kkp-calisma/paket --takim hukuk [--renk lacivert] [--yogunluk ferah]
+  ```
+  Araç bilinmeyen seçeneği reddeder ve geçerli adları listeler. Kendin CSS, font ya da renk yazma; CDN'den font çağırma; `kitap.css`
+  ve `set-*.css` dosyalarını düzenleme (düzenlenen set dosyası doğrulayıcıda tanınmaz, tema uyarısı döner). Hoca "sade kalsın" derse
+  adımı atla. İkinci baskıda `--onceki` aynı seçimi kendisi yeniden uygular.
 
 **A5. Doğrulama:** `kkp-lint … --ag-kapali` hata 0 → `python3 "${CLAUDE_SKILL_DIR}/scripts/kkp-denetim.py" kkp-calisma/paket` →
 `onizleme.html`'i tarayıcıda açıp zip'i sürükle ve **her bölümü gez**: başlıklar/İçindekiler, formüller, şekiller, kutular, quiz geri

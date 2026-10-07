@@ -1,0 +1,566 @@
+/* Kitappta platform kitap.css — bölüm belgesine sarmalayıcı tarafından inline gömülür (opak origin cache bölümlemesi,
+   gün 1 ölçümü d). Kapsam BİLİNÇLİ dar (kanvas kararı): token'lar + html/body + math/img temel + kt-rt-* runtime
+   bileşenleri. Okuma sütununu PAKET belirler (.kt-bolum max-width 1012px) — burada 72ch dayatılmaz, !important yazılmaz;
+   paketin 1447 !important'ıyla yarışa girilmez. Token değerleri docs/design/okuyucu/README.md tablosuyla birebir. */
+
+:root,
+html[data-kt-theme="light"] {
+  color-scheme: light;
+  --kt-bg: #ffffff;
+  --kt-fg: #0b1e43;
+  --kt-muted: #5e6d88;
+  --kt-surface: #f7f9fd;
+  --kt-border: #dce5f3;
+  --kt-accent: #0b66f6;
+  --kt-font-metin: Georgia, "Times New Roman", "Noto Serif", serif;
+  --kt-font-baslik: Georgia, "Times New Roman", "Noto Serif", serif;
+  --kt-font-math: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Noto Sans Math", serif;
+  --kt-rt-golge: 0 12px 28px rgba(15, 45, 90, 0.14);
+  --kt-rt-vurgu: rgba(11, 102, 246, 0.14);
+  --kt-rt-filigran: rgba(11, 30, 67, 0.08);
+  --kt-rt-ses: rgba(11, 102, 246, 0.1);
+}
+
+html[data-kt-theme="dark"] {
+  color-scheme: dark;
+  --kt-bg: #0e141c;
+  --kt-fg: #e7edf5;
+  --kt-muted: #a9b7cf;
+  --kt-surface: #151d28;
+  --kt-border: #2d3948;
+  --kt-accent: #4f8cff;
+  --kt-rt-golge: 0 12px 28px rgba(0, 0, 0, 0.5);
+  --kt-rt-vurgu: rgba(79, 140, 255, 0.2);
+  --kt-rt-filigran: rgba(231, 237, 245, 0.09);
+  --kt-rt-ses: rgba(79, 140, 255, 0.16);
+}
+
+html[data-kt-theme="sepia"] {
+  color-scheme: light;
+  --kt-bg: #f3e7cc;
+  --kt-fg: #443a2d;
+  --kt-muted: #6b5b46;
+  --kt-surface: #fbf3df;
+  --kt-border: #d8c9a6;
+  --kt-accent: #1d4fa8;
+  --kt-rt-golge: 0 12px 28px rgba(80, 60, 20, 0.18);
+  --kt-rt-vurgu: rgba(29, 79, 168, 0.14);
+  --kt-rt-filigran: rgba(68, 58, 45, 0.09);
+  --kt-rt-ses: rgba(29, 79, 168, 0.1);
+}
+
+html {
+  /* Ölçek: kabuk ayar{olcek} ile html.style.fontSize yazar (calc(16px * olcek)); burası yalnız varsayılan */
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 16px;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--kt-bg);
+  color: var(--kt-fg);
+}
+
+body {
+  font-family: var(--kt-font-metin);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+math {
+  font-family: var(--kt-font-math);
+}
+
+math[display="block"] {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--kt-accent);
+  outline-offset: 2px;
+}
+
+/* ---------------- Runtime bileşenleri (kt-rt-* — paket için rezerve önek, KKP-HTML-09) ---------------- */
+
+/* Gezinme hedefi vurgusu (1.6 sn) */
+.kt-rt-hedef {
+  animation: kt-rt-vurgu 1.6s ease-out 1;
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--kt-accent);
+}
+
+@keyframes kt-rt-vurgu {
+  0% {
+    background-color: var(--kt-rt-vurgu);
+  }
+  70% {
+    background-color: var(--kt-rt-vurgu);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Plan 28 Görev B5: sesli kitap — okunmakta olan blok (ayrı katman, not vurgularıyla çakışmaz). Kalıcı (oynatıcı
+   kapanana/blok değişene dek), bu yüzden animasyon yerine geçişli arka plan. */
+.kt-rt-ses-aktif {
+  box-shadow: inset 3px 0 0 var(--kt-accent);
+  background: var(--kt-rt-ses);
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+/* "↩ Geri dön" pill'i (sağ alt, 44px) */
+.kt-rt-geri {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 40;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--kt-border);
+  border-radius: 999px;
+  background: var(--kt-surface);
+  color: var(--kt-fg);
+  font: 600 14px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-shadow: var(--kt-rt-golge);
+  cursor: pointer;
+  max-width: min(60vw, 360px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kt-rt-geri:hover {
+  border-color: var(--kt-accent);
+}
+
+/* Dipnot numarası (runtime basar — standart §4/§7; pakette bulunmaz) */
+.kt-rt-notno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  min-width: 22px;
+  height: 22px;
+  margin: 0.15em 8px 0 0;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--kt-accent);
+  color: #fff;
+  font: 700 12px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+aside.kt-dipnot::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* Dipnot içindeki geri oku */
+.kt-rt-notgeri {
+  display: inline-block;
+  margin-left: 6px;
+  min-width: 28px;
+  text-align: center;
+  color: var(--kt-accent);
+  text-decoration: none;
+  font-family: system-ui, sans-serif;
+}
+
+/* Dipnot popover'ı (aside.kt-dipnot klonu) */
+.kt-rt-dipnot {
+  position: absolute;
+  z-index: 50;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--kt-border);
+  border-radius: 12px;
+  background: var(--kt-surface);
+  color: var(--kt-fg);
+  box-shadow: var(--kt-rt-golge);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.kt-rt-dipnot-bas,
+.kt-rt-dipnot-alt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kt-rt-dipnot-govde {
+  margin: 8px 0;
+  max-height: 40vh;
+  overflow: auto;
+}
+
+.kt-rt-dipnot-govde > :first-child {
+  margin-top: 0;
+}
+
+.kt-rt-dipnot-govde > :last-child {
+  margin-bottom: 0;
+}
+
+.kt-rt-rozet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--kt-accent);
+  color: #fff;
+  font: 700 12px/1 system-ui, sans-serif;
+}
+
+.kt-rt-kapat {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--kt-muted);
+  font: 400 24px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.kt-rt-kapat:hover {
+  background: var(--kt-rt-vurgu);
+  color: var(--kt-fg);
+}
+
+.kt-rt-link {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--kt-accent);
+  font: 600 14px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+/* Lightbox (yalnız figure > img) */
+.kt-rt-lightbox {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 24px;
+  border: 0;
+  background: transparent;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kt-rt-lightbox[open] {
+  display: flex;
+}
+
+.kt-rt-lightbox::backdrop {
+  background: rgba(2, 11, 27, 0.85);
+}
+
+.kt-rt-lightbox > img {
+  max-width: 100%;
+  max-height: calc(100vh - 120px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.kt-rt-lightbox-alt {
+  margin: 0;
+  max-width: 72ch;
+  color: #edf4ff;
+  font: 400 14px/1.5 system-ui, sans-serif;
+  text-align: center;
+}
+
+.kt-rt-lightbox-kapat {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  color: #edf4ff;
+  font-size: 30px;
+}
+
+.kt-rt-lightbox-kapat:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+figure > img {
+  cursor: zoom-in;
+}
+
+/* ---------------- Faz B: not/işaretleme + bölüm içi arama (kanvas §13 token tablosu — birleşik zemin fg üstünde ≥ 4.5:1) ---------------- */
+
+:root,
+html[data-kt-theme="light"] {
+  --kt-not-sari: rgba(255, 224, 102, 0.55);
+  --kt-not-yesil: rgba(126, 226, 168, 0.5);
+  --kt-not-mavi: rgba(142, 197, 255, 0.5);
+  --kt-not-pembe: rgba(255, 179, 199, 0.55);
+  --kt-not-secili: rgba(11, 102, 246, 0.28);
+  --kt-arama: rgba(255, 176, 32, 0.45);
+  --kt-arama-aktif: rgba(255, 140, 0, 0.75);
+}
+
+html[data-kt-theme="dark"] {
+  --kt-not-sari: rgba(245, 197, 24, 0.32);
+  --kt-not-yesil: rgba(61, 220, 132, 0.28);
+  --kt-not-mavi: rgba(79, 140, 255, 0.32);
+  --kt-not-pembe: rgba(255, 122, 162, 0.32);
+  --kt-not-secili: rgba(79, 140, 255, 0.42);
+  --kt-arama: rgba(255, 176, 32, 0.35);
+  --kt-arama-aktif: rgba(255, 140, 0, 0.45);
+}
+
+html[data-kt-theme="sepia"] {
+  --kt-not-sari: rgba(240, 192, 32, 0.5);
+  --kt-not-yesil: rgba(111, 207, 151, 0.5);
+  --kt-not-mavi: rgba(127, 179, 240, 0.5);
+  --kt-not-pembe: rgba(242, 154, 183, 0.5);
+  --kt-not-secili: rgba(29, 79, 168, 0.26);
+  --kt-arama: rgba(255, 160, 0, 0.45);
+  --kt-arama-aktif: rgba(255, 122, 0, 0.7);
+}
+
+/* Birincil çizim: CSS Custom Highlight API (yalnız background-color; metin rengi değişmez, seçili notta accent altı çizgi) */
+::highlight(kt-not-sari) {
+  background-color: var(--kt-not-sari);
+}
+
+::highlight(kt-not-yesil) {
+  background-color: var(--kt-not-yesil);
+}
+
+::highlight(kt-not-mavi) {
+  background-color: var(--kt-not-mavi);
+}
+
+::highlight(kt-not-pembe) {
+  background-color: var(--kt-not-pembe);
+}
+
+::highlight(kt-not-secili) {
+  background-color: var(--kt-not-secili);
+  text-decoration: underline 2px var(--kt-accent);
+  text-underline-offset: 3px;
+}
+
+::highlight(kt-arama) {
+  background-color: var(--kt-arama);
+}
+
+::highlight(kt-arama-aktif) {
+  background-color: var(--kt-arama-aktif);
+}
+
+/* Fallback (Highlight API yok): <mark class="kt-rt-not kt-rt-not-{renk}" data-kt-not> — yalnız metin düğümleri sarılır */
+.kt-rt-not {
+  --kt-not-renk: var(--kt-not-sari);
+  background: var(--kt-not-renk);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0.06em 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.kt-rt-not-sari {
+  --kt-not-renk: var(--kt-not-sari);
+}
+
+.kt-rt-not-yesil {
+  --kt-not-renk: var(--kt-not-yesil);
+}
+
+.kt-rt-not-mavi {
+  --kt-not-renk: var(--kt-not-mavi);
+}
+
+.kt-rt-not-pembe {
+  --kt-not-renk: var(--kt-not-pembe);
+}
+
+/* <math> içine mark girmez: formülün tamamı işaretlenir (bazı motorlar MathML'de background basmaz → outline) */
+math.kt-rt-not-math {
+  background: var(--kt-not-renk);
+  outline: 2px solid var(--kt-not-renk);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.kt-rt-not-secili,
+math.kt-rt-not-math.kt-rt-not-secili {
+  background: var(--kt-not-secili);
+  text-decoration: underline 2px var(--kt-accent);
+  text-underline-offset: 3px;
+}
+
+/* Arama fallback işaretleri */
+.kt-rt-ara {
+  background: var(--kt-arama);
+  color: inherit;
+  border-radius: 2px;
+}
+
+math.kt-rt-ara-math {
+  background: var(--kt-arama);
+  outline: 2px solid var(--kt-arama);
+  outline-offset: 1px;
+}
+
+.kt-rt-ara-aktif,
+math.kt-rt-ara-math.kt-rt-ara-aktif {
+  background: var(--kt-arama-aktif);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kt-rt-hedef {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  ::highlight(kt-not-secili),
+  .kt-rt-not-secili {
+    transition: none;
+  }
+  .kt-rt-ses-aktif {
+    transition: none;
+  }
+}
+
+/* ---- Plan 24 K3: kişisel filigran katmanı (runtime/filigran.ts) — viewport'u %160 taşarak kaplar, −24°, döşeli, tıklanamaz.
+   Karo boyutu runtime KARO_GEN/KARO_YUK ile aynı (260×170). Inline style yok; renk tema başına --kt-rt-filigran. ---- */
+.kt-rt-filigran {
+  position: fixed;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  transform: rotate(-24deg);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  z-index: 2147483000;
+  color: var(--kt-rt-filigran);
+  font: 600 12px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.kt-rt-filigran span {
+  flex: 0 0 260px;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kt-rt-filigran span:nth-child(even) {
+  padding-top: 70px;
+  box-sizing: border-box;
+}
+
+/* Lightbox <dialog> üst katmandadır (fixed katmanın üstünde çizilir) — görsele tek satır filigran. */
+.kt-rt-lightbox[data-kt-filigran]::after {
+  content: attr(data-kt-filigran);
+  position: fixed;
+  left: 16px;
+  bottom: 12px;
+  color: rgba(237, 244, 255, 0.6);
+  font: 600 12px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------------- Plan 32: platform quiz motoru (runtime/quiz.ts) — yalnız sunucunun data-kt-quiz ile işaretlediği quiz'ler.
+   Doğru/yanlış görünümü PAKETİN kendi sınıflarıyla (kt-dogru, kt-yanlis, kt-secili, kt-dogru-secenek) gelir; burada yalnız
+   runtime'ın eklediği parçalar ve numara. Statik bloklara/atalara kt-rt-* sınıfı YAZILMAZ (blok dizininden düşerlerdi).
+   Seçiciler bilinçli olarak yüksek özgüllüklü: paket CSS'i (.kt-bolum button …) platform CSS'inden SONRA gelir. ---------------- */
+div.kt-quiz[data-kt-quiz] [data-kt-quiz-no] {
+  display: none;
+}
+div.kt-quiz[data-kt-quiz] .kt-soru[data-kt-no]::before {
+  content: attr(data-kt-no) ". ";
+}
+.kt-bolum div.kt-quiz[data-kt-quiz] button.kt-rt-quiz-kontrol {
+  margin-top: 0.6em;
+  min-height: 2.75rem; /* dokunma hedefi — kendi CSS'ini getiren pakette de ≥ 44 px */
+  padding: 0.45em 1.1em;
+  border: 1px solid var(--kt-accent);
+  border-radius: 0.4rem;
+  background: var(--kt-accent);
+  color: var(--kt-bg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.kt-bolum div.kt-quiz[data-kt-quiz] button.kt-rt-quiz-kontrol:disabled,
+.kt-bolum div.kt-quiz[data-kt-quiz] button.kt-rt-quiz-kontrol[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+}
+.kt-bolum div.kt-quiz[data-kt-quiz] button.kt-rt-quiz-kontrol:focus-visible,
+.kt-bolum div.kt-quiz[data-kt-quiz] .kt-geri-bildirim:focus-visible {
+  outline: 2px solid var(--kt-accent);
+  outline-offset: 2px;
+}
+.kt-bolum div.kt-quiz[data-kt-quiz] fieldset[data-kt-durum="kilitli"] button.kt-rt-quiz-kontrol {
+  display: none;
+}
+div.kt-quiz[data-kt-quiz] fieldset[data-kt-durum="bekliyor"] .kt-secenekler label,
+div.kt-quiz[data-kt-quiz] fieldset[data-kt-durum="tekrar"] .kt-secenekler label,
+div.kt-quiz[data-kt-quiz] fieldset[data-kt-durum="kilitli"] .kt-secenekler label {
+  cursor: default;
+}
+/* Paket geri bildirim kutusu getirmediyse runtime'ın eklediği yedek kutu */
+.kt-bolum div.kt-quiz[data-kt-quiz] .kt-rt-quiz-geri {
+  margin-top: 0.6em;
+  padding: 0.5em 0.8em;
+  border: 1px solid var(--kt-border);
+  border-radius: 0.4rem;
+}
+.kt-bolum div.kt-quiz[data-kt-quiz] .kt-rt-quiz-geri:empty {
+  display: none;
+}
+
+@media print {
+  body {
+    display: none;
+  }
+}

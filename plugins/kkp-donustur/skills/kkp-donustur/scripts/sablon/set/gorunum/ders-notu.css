@@ -1,0 +1,6 @@
+/* Kitappta seti — görünüm: Ders notu (scripts/kkp/sablon/set/gorunum/ders-notu.css). Kesit başlığı zeminli bant, alt başlık vurgu renginde;
+   kısa kesitli, bol başlıklı notlar için. */
+.kt-bolum{--kitap-olcu:58rem}
+.kt-bolum h2{padding:.5em .8em;border:1px solid var(--kt-border,#dce5f3);border-inline-start:4px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6));border-radius:var(--kitap-kose,.4rem);background:var(--kt-surface,#f7f9fd)}
+.kt-bolum h3{color:var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
+.kt-bolum h4{color:var(--kt-muted,#5e6d88)}

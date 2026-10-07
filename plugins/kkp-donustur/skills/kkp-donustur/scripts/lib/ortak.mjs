@@ -88,12 +88,14 @@ export function baslikYazisi(metin) {
 
 /** Daima açık kutu adayı: "Örnek 1.1:", "Alıştırma 2:", "Uyarı:" … */
 export const KUTU_RE = /^\s*(Örnek|Ornek|Alıştırma|Alistirma|Uyarı|Uyari|Not|Tanım|Tanim|Teorem|Sonuç|Sonuc|Özet|Ozet|Çözüm|Cozum|Ödev|Odev|Soru|Hatırlatma|Hatirlatma)\s*(\d+(?:\s*[.,]\s*\d+)?)?\s*[:.\-–—]\s*/u;
+/** Kutu sözcüğü → kart ailesi türü (kt-kutu--<tur>, Plan 35). Ödev ve Soru alıştırmadır, Hatırlatma nottur. */
+export const KUTU_KART_TURU = { ornek: "ornek", alistirma: "alistirma", odev: "alistirma", soru: "alistirma", uyari: "uyari", not: "not", hatirlatma: "not", tanim: "tanim", teorem: "teorem", sonuc: "sonuc", ozet: "ozet", cozum: "cozum" };
 export function kutuAnahtari(metin) {
   const m = KUTU_RE.exec(metin);
   if (!m) return null;
   const tur = m[1].normalize("NFC").toLowerCase().replace(/[çÇğĞıIİöÖşŞüÜ]/g, (c) => TR[c] ?? c);
   const no = m[2] ? m[2].replace(/\s+/g, "").replace(",", ".") : "";
-  return { tur, no, anahtar: no ? `${tur} ${no}` : null };
+  return { tur, no, anahtar: no ? `${tur} ${no}` : null, kart: KUTU_KART_TURU[tur] ?? null };
 }
 
 /** Basit HTML entity çözümü (yapi.md için). */

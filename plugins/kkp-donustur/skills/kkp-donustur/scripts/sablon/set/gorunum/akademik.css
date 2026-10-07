@@ -1,0 +1,12 @@
+/* Kitappta seti — görünüm: Akademik (scripts/kkp/sablon/set/gorunum/akademik.css). Dar okuma sütunu, iki yana yaslı gövde, çizgili başlıklar,
+   sıkı dipnot. Dar ekranda yaslama kapanır (heceleme her cihazda yok; sözcük arası açılmasın). */
+.kt-bolum{--kitap-olcu:46rem}
+.kt-bolum>p:not(.kt-esitlik){text-align:justify;hyphens:auto}
+.kt-bolum h1{border-bottom-color:var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
+.kt-bolum h2{padding-inline-start:.7em;border-inline-start:4px solid var(--kitap-vurgu,var(--kt-accent,#0b66f6))}
+.kt-bolum h3{padding-bottom:.3em;border-bottom:1px solid var(--kt-border,#dce5f3)}
+.kt-bolum .kt-dipnotlar{font-size:.85em;line-height:1.5}
+.kt-bolum .kt-dipnot{margin:.3em 0}
+@media (max-width:40rem){
+  .kt-bolum>p:not(.kt-esitlik){text-align:start}
+}

@@ -1,0 +1,6 @@
+/* Kitappta seti — kart biçimi: Çerçeveli (scripts/kkp/sablon/set/kart/cerceveli.css). İnce renkli çerçeve, sayfa zemini, yuvarlak köşe; zemin
+   boyanmaz, şerit yoktur. Çerçeve rengi kutunun türünden gelir (türsüz kutuda vurgu rengi). */
+.kt-bolum{--kitap-kutu-serit:1px;--kitap-kutu-zemin:var(--kt-bg,#ffffff);--kitap-kose:.75rem;--kitap-tur-ton:0%}
+.kt-bolum .kt-kutu,.kt-bolum .kt-kart{--kitap-kutu-kenar:1px solid color-mix(in srgb,var(--kitap-tur,var(--kitap-vurgu,var(--kt-accent,#0b66f6))) 55%,var(--kt-border,#dce5f3))}
+.kt-bolum .kt-kutu{border-inline-start-color:color-mix(in srgb,var(--kitap-tur,var(--kitap-vurgu,var(--kt-accent,#0b66f6))) 55%,var(--kt-border,#dce5f3))}
+.kt-bolum .kt-kutu[class*="kt-kutu--"]{border-inline-start-color:color-mix(in srgb,var(--kitap-tur) 55%,var(--kt-border,#dce5f3))}

@@ -1,0 +1,169 @@
+<!-- Kitappta seti — önizlemenin örnek bölümü (scripts/kkp/sablon/set/onizleme-ornek.html). set-onizleme.mjs bu parçayı önizleme sayfasına gömer.
+     Bir kitabın taşıyabileceği bütün bileşenler bir kez geçer: başlıklar, uzun paragraf, liste, on beş kart türü, türsüz kutu, açılır kart,
+     tablo, şekil, eşitlik, alıntı, kod, dipnot, kaynakça, Bölüm Tekrar. Metin örnektir; pakete girmez. -->
+<section class="kt-bolum" data-kt-bolum="b02" id="b02">
+<h1 id="h0001">2. Piyasa Dengesi</h1>
+<p id="p0001">Bir malın fiyatı, o malı almak isteyenlerle satmak isteyenlerin kararlarının karşılaştığı yerde belirlenir. Bu bölümde talep ve arz kavramlarını tanımlıyor, ikisinin birlikte denge fiyatını nasıl oluşturduğunu gösteriyor ve resmî fiyat müdahalelerinin sonuçlarını tartışıyoruz. Anlatım boyunca tek bir malın piyasasına bakılır; öteki piyasalardaki gelişmelerin bu piyasayı etkilemediği varsayılır.<sup><a class="kt-notref" id="notref0001" href="#not0001">1</a></sup></p>
+<div class="kt-kutu kt-kutu--kazanim" id="kutu0001">
+<p class="kt-kutu-etiket" id="p0002">Bu bölümde</p>
+<ul>
+<li id="li0001">Talep ve arz eğrilerini çizebilecek, kaymalarını yorumlayabileceksiniz.</li>
+<li id="li0002">Doğrusal modelde denge fiyatını ve miktarını hesaplayabileceksiniz.</li>
+<li id="li0003">Tavan ve taban fiyatın yol açtığı kıtlık ve fazlayı açıklayabileceksiniz.</li>
+</ul>
+</div>
+
+<h2 id="h0002">2.1 Talep ve Arz</h2>
+<p id="p0003">Tüketicinin bir maldan satın almak istediği miktar; malın fiyatına, tüketicinin gelirine, ilişkili malların fiyatlarına ve beklentilere bağlıdır. İktisatçılar bu etkenlerden yalnız birini, malın kendi fiyatını değiştirip ötekileri sabit tutarak talep eğrisini elde eder. Satıcının kâr beklentisi ise arzın arkasındaki temel güdüdür: fiyat yükseldikçe üretmek daha kârlı hâle gelir ve piyasaya sürülen miktar artar. Ayrıntılı bir tartışma için <a href="#kay0001">Varian'ın ders kitabına</a> bakılabilir.</p>
+<div class="kt-kutu kt-kutu--tanim" id="kutu0002">
+<p class="kt-kutu-etiket" id="p0004">Tanım</p>
+<p id="p0005"><strong>Talep</strong>, belirli bir dönemde, öteki etkenler sabitken, tüketicilerin her fiyat düzeyinde satın almaya istekli ve güçlü oldukları mal miktarıdır.</p>
+</div>
+<div class="kt-kutu kt-kutu--kural" id="kutu0003">
+<p class="kt-kutu-etiket" id="p0006">Kural · Talep kanunu</p>
+<p id="p0007">Öteki etkenler sabitken bir malın fiyatı yükselirse talep edilen miktar azalır, fiyatı düşerse artar.</p>
+</div>
+
+<h3 id="h0003">2.1.1 Talebi kaydıran etkenler</h3>
+<p id="p0008">Fiyat dışındaki bir etken değiştiğinde eğri üzerinde hareket edilmez, eğrinin kendisi yer değiştirir. Başlıca etkenler şunlardır:</p>
+<ul>
+<li id="li0004"><strong>Gelir:</strong> normal mallarda gelir artışı talebi sağa kaydırır.</li>
+<li id="li0005"><strong>İlişkili mallar:</strong> ikame malın fiyatı artarsa talep artar, tamamlayıcı malın fiyatı artarsa azalır.</li>
+<li id="li0006"><strong>Beklentiler:</strong> fiyatın yükseleceği beklentisi bugünkü talebi artırır.</li>
+</ul>
+<div class="kt-kutu kt-kutu--not" id="kutu0004">
+<p class="kt-kutu-etiket" id="p0009">Not</p>
+<p id="p0010">"Talep" ile "talep edilen miktar" aynı şey değildir: ilki eğrinin tamamını, ikincisi eğri üzerindeki tek bir noktayı anlatır.</p>
+</div>
+<div class="kt-kutu kt-kutu--ipucu" id="kutu0005">
+<p class="kt-kutu-etiket" id="p0011">İpucu</p>
+<p id="p0012">Bir soruda önce şunu sorun: değişen şey malın kendi fiyatı mı? Evetse eğri üzerinde hareket, hayırsa eğrinin kayması söz konusudur.</p>
+</div>
+<div class="kt-kutu kt-kutu--hata" id="kutu0006">
+<p class="kt-kutu-etiket" id="p0013">Sık yapılan hata</p>
+<p id="p0014">Fiyat düştüğünde "talep arttı" demek. Artan talep değil, talep edilen miktardır; eğri yerinde durur.</p>
+</div>
+
+<h2 id="h0004">2.2 Denge</h2>
+<p id="p0015">Piyasa, talep edilen miktarın arz edilen miktara eşit olduğu fiyatta dengeye gelir. Bu fiyatta ne alıcıların ne de satıcıların davranışını değiştirmesi için bir neden kalır. Doğrusal bir modelde talep <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>Q</mi><mi>d</mi></msub><mo>=</mo><mi>a</mi><mo>−</mo><mi>b</mi><mi>P</mi></mrow></math>, arz ise <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>Q</mi><mi>s</mi></msub><mo>=</mo><mi>c</mi><mo>+</mo><mi>d</mi><mi>P</mi></mrow></math> biçiminde yazılır.</p>
+<div class="kt-kutu kt-kutu--teorem" id="kutu0007">
+<p class="kt-kutu-etiket" id="p0016">Önerme 2.1</p>
+<p id="p0017">Doğrusal modelde <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>a</mi><mo>&gt;</mo><mi>c</mi></mrow></math> ve <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>b</mi><mo>+</mo><mi>d</mi><mo>&gt;</mo><mn>0</mn></mrow></math> ise tek bir pozitif denge fiyatı vardır.</p>
+</div>
+<p class="kt-esitlik" id="eq-2-1" data-kt-eq="2.1"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msup><mi>P</mi><mo>*</mo></msup><mo>=</mo><mfrac><mrow><mi>a</mi><mo>−</mo><mi>c</mi></mrow><mrow><mi>b</mi><mo>+</mo><mi>d</mi></mrow></mfrac></mrow></math> <span class="kt-eq-no">(2.1)</span></p>
+<div class="kt-kutu kt-kutu--ornek" id="kutu0008">
+<p class="kt-kutu-etiket" id="p0018">Örnek 2.1</p>
+<p id="p0019">Talep <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>Q</mi><mi>d</mi></msub><mo>=</mo><mn>16</mn><mo>−</mo><mn>4</mn><mi>P</mi></mrow></math>, arz <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>Q</mi><mi>s</mi></msub><mo>=</mo><mn>4</mn><mo>+</mo><mn>2</mn><mi>P</mi></mrow></math> olsun. Denge fiyatını ve miktarını bulunuz.</p>
+</div>
+<details class="kt-kart kt-kutu--cozum" id="kart0001">
+<summary id="sum0001">Çözüm</summary>
+<div class="kt-kart-govde">
+<p id="p0020">Denge koşulundan 16 − 4P = 4 + 2P, buradan 12 = 6P ve P* = 2 bulunur. Bu fiyat talep denkleminde yerine konursa Q* = 16 − 8 = 8 elde edilir.</p>
+</div>
+</details>
+<div class="kt-kutu kt-kutu--cozum" id="kutu0009">
+<p class="kt-kutu-etiket" id="p0021">Çözüm yolu</p>
+<p id="p0022">Önce denge koşulunu yazın, fiyatı çözün, sonra fiyatı iki denklemden birinde yerine koyup miktarı bulun; öteki denklemle sağlamasını yapın.</p>
+</div>
+
+<div class="kt-tablo">
+<table id="tab0001">
+<caption id="tab0001-alt">Tablo 2.1: Fiyata göre talep, arz ve piyasa durumu</caption>
+<thead><tr><th id="th0001">Fiyat (TL)</th><th id="th0002">Talep edilen</th><th id="th0003">Arz edilen</th><th id="th0004">Durum</th></tr></thead>
+<tbody>
+<tr><td id="td0001">1</td><td id="td0002">12</td><td id="td0003">6</td><td id="td0004">Kıtlık (6 birim)</td></tr>
+<tr><td id="td0005">2</td><td id="td0006">8</td><td id="td0007">8</td><td id="td0008">Denge</td></tr>
+<tr><td id="td0009">3</td><td id="td0010">4</td><td id="td0011">10</td><td id="td0012">Fazla (6 birim)</td></tr>
+</tbody>
+</table>
+</div>
+<figure id="sek0001">
+<svg viewBox="0 0 360 220" width="360" height="220" role="img" aria-label="Talep ve arz eğrilerinin kesiştiği denge noktası" fill="none" stroke="currentColor" stroke-width="1.5">
+<path d="M40 20v170h300"/><path d="M60 40L300 170"/><path d="M60 170L300 50"/><circle cx="183" cy="107" r="4" fill="currentColor"/>
+<path d="M40 107h143M183 107v83" stroke-dasharray="4 4" stroke-width="1"/>
+<g fill="currentColor" stroke="none" font-size="12" font-family="inherit"><text x="306" y="176">D</text><text x="306" y="50">S</text><text x="20" y="111">P*</text><text x="176" y="206">Q*</text><text x="28" y="18">P</text><text x="344" y="194">Q</text></g>
+</svg>
+<figcaption id="sek0001-alt">Şekil 2.1: Talep (D) ve arz (S) eğrileri denge noktasında kesişir.</figcaption>
+</figure>
+
+<h3 id="h0005">2.2.1 Fiyat müdahaleleri</h3>
+<p id="p0023">Devlet bazı piyasalarda fiyatın serbestçe oluşmasına izin vermez. Denge fiyatının altında belirlenen tavan fiyat kıtlığa, üstünde belirlenen taban fiyat ise fazlaya yol açar. Piyasaya hâkim tek bir satıcının bulunduğu durumlar ayrı bir bölümde ele alınacaktır.</p>
+<div class="kt-kutu kt-kutu--uyari" id="kutu0010">
+<p class="kt-kutu-etiket" id="p0024">Uyarı</p>
+<p id="p0025">Tavan fiyat ancak denge fiyatının <em>altında</em> belirlenirse bağlayıcıdır. Denge fiyatının üstündeki bir tavan piyasayı etkilemez.</p>
+</div>
+<div class="kt-kutu kt-kutu--karsilastirma" id="kutu0011">
+<p class="kt-kutu-etiket" id="p0026">Karşılaştırma</p>
+<p id="p0027"><strong>Tavan fiyat</strong> alıcıyı korumak için konur, kıtlık ve kuyruk yaratır. <strong>Taban fiyat</strong> satıcıyı korumak için konur, satılamayan fazla yaratır.</p>
+</div>
+<div class="kt-kutu kt-kutu--olay" id="kutu0012">
+<p class="kt-kutu-etiket" id="p0028">Örnek olay</p>
+<p id="p0029">Bir belediye, kent merkezindeki konutlar için kira artışına üst sınır getirir. İlk yıl kiracılar kazançlıdır; izleyen yıllarda ev sahipleri bakım harcamalarını kısar, bir bölümü konutunu kiradan çeker ve kiralık konut bulmak güçleşir.</p>
+</div>
+
+<h4 id="h0006">Esneklik üzerine kısa bir not</h4>
+<p id="p0030">Müdahalenin yaratacağı kıtlığın büyüklüğü eğrilerin eğimine bağlıdır. Marshall'ın ifadesiyle:</p>
+<blockquote id="bq0001"><p id="p0031">Fiyatı belirleyenin talep mi yoksa arz mı olduğunu sormak, bir kâğıdı makasın üst bıçağının mı alt bıçağının mı kestiğini sormaya benzer.</p></blockquote>
+<pre id="pre0001"><code>P* = (a - c) / (b + d)
+Q* = a - b * P*</code></pre>
+<div class="kt-kutu kt-kutu--alistirma" id="kutu0013">
+<p class="kt-kutu-etiket" id="p0032">Alıştırma 2.1</p>
+<p id="p0033">Örnek 2.1'deki piyasada devlet 1 TL'lik tavan fiyat uygularsa kıtlık kaç birim olur? Tablo 2.1'den yararlanınız.</p>
+</div>
+<div class="kt-kutu kt-kutu--sonuc" id="kutu0014">
+<p class="kt-kutu-etiket" id="p0034">Sonuç</p>
+<p id="p0035">Bağlayıcı bir fiyat sınırı, piyasada alınıp satılan miktarı her zaman azaltır.</p>
+</div>
+<div class="kt-kutu kt-kutu--ozet" id="kutu0015">
+<p class="kt-kutu-etiket" id="p0036">Özet</p>
+<p id="p0037">Talep fiyatla ters, arz fiyatla aynı yönde değişir. Denge, iki eğrinin kesiştiği noktadır; doğrusal modelde Eşitlik 2.1 ile hesaplanır. Fiyat sınırları dengeyi bozar ve kıtlık ya da fazla doğurur.</p>
+</div>
+<div class="kt-kutu" id="kutu0016">
+<p id="p0038">Türü belirtilmemiş kutu: bugünkü kitaplardaki gibi görünür, etiketi yoktur.</p>
+</div>
+
+<h2 id="h0007">Kaynakça</h2>
+<article class="kt-kaynak" id="kay0001"><p id="p0039">Varian, H. R. (2014). <em>Intermediate Microeconomics: A Modern Approach</em> (9. baskı). W. W. Norton.</p></article>
+<article class="kt-kaynak" id="kay0002"><p id="p0040">Marshall, A. (1890). <em>Principles of Economics</em>. Macmillan.</p></article>
+
+<section class="kt-tekrar" id="tekrar-b02">
+<h2 id="h0008">Bölüm Tekrar</h2>
+<div class="kt-quiz" id="quiz-b02">
+<fieldset id="q-b02-1">
+<p id="p0041" class="kt-soru">1. Doğrusal piyasa modelinde denge fiyatı hangi koşulda oluşur?</p>
+<ul class="kt-secenekler">
+<li id="li0007"><label><input type="radio" name="q-b02-1" value="0"> Talep edilen miktar arz edilen miktardan büyükken</label></li>
+<li id="li0008"><label><input type="radio" name="q-b02-1" value="1"> Talep edilen miktar arz edilen miktara eşitken</label></li>
+<li id="li0009"><label><input type="radio" name="q-b02-1" value="2"> Fiyat sıfırken</label></li>
+<li id="li0010"><label><input type="radio" name="q-b02-1" value="3"> Arz fonksiyonu sabitken</label></li>
+</ul>
+<div class="kt-geri-bildirim" data-kt-dinamik></div>
+</fieldset>
+<div class="kt-quiz-kontrol" data-kt-dinamik><button type="button" class="kt-quiz-sifirla">Cevapları sıfırla</button></div>
+<p class="kt-skor" data-kt-dinamik></p>
+</div>
+<script type="application/json" id="quiz-b02-veri">
+{"tur":"quiz","sorular":[
+  {"id":"q-b02-1","soru":"Doğrusal piyasa modelinde denge fiyatı hangi koşulda oluşur?","secenekler":["Talep edilen miktar arz edilen miktardan büyükken","Talep edilen miktar arz edilen miktara eşitken","Fiyat sıfırken","Arz fonksiyonu sabitken"],"dogru":1,"aciklama":"Denge, talep edilen miktarın arz edilen miktara eşit olduğu fiyattır (Eşitlik 2.1)."}
+]}
+</script>
+<h3 id="h0009">Kavram kartları</h3>
+<div class="kt-flash" id="flash-b02">
+<ol class="kt-flash-liste">
+<li class="kt-flash-kart" id="li0011"><p class="kt-flash-on" id="p0042">Denge fiyatı</p><p class="kt-flash-arka" id="p0043">Talep edilen miktarın arz edilen miktara eşit olduğu fiyat.</p></li>
+<li class="kt-flash-kart" id="li0012"><p class="kt-flash-on" id="p0044">Tavan fiyat</p><p class="kt-flash-arka" id="p0045">Bir malın satılabileceği en yüksek fiyatın resmî olarak sınırlanması.</p></li>
+</ol>
+<div class="kt-flash-kontrol" data-kt-dinamik>
+<button type="button" class="kt-flash-onceki">Önceki</button>
+<button type="button" class="kt-flash-cevir kt-birincil">Çevir</button>
+<button type="button" class="kt-flash-sonraki">Sonraki</button>
+<button type="button" class="kt-flash-karistir">Karıştır</button>
+<span class="kt-flash-sayac"></span>
+</div>
+</div>
+</section>
+
+<section class="kt-dipnotlar">
+<aside class="kt-dipnot" id="not0001"><p id="p0046">Bu varsayıma kısmi denge yaklaşımı denir; bütün piyasaların birlikte ele alındığı genel denge çözümlemesi kitabın son bölümündedir.</p></aside>
+</section>
+</section>

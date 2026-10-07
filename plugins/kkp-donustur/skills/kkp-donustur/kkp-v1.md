@@ -191,7 +191,7 @@ ile yeniden yazılması yasak.
 | CSS kapsam | Tüm seçiciler `.kt-bolum` altında; `#book` yok | `KKP-CSS-09` |
 | **Tema — PLATFORMUNDUR (Hasan 02.09).** Paket tema kuralı YAZMAZ (`body.dark`, `.sepia`, `.reader-theme-*`, `[data-theme]`, `prefers-color-scheme`, `html[data-kt-theme]` kuralı yok); renk/zemin/çizgi için yalnız platform token'ları `--kt-bg --kt-fg --kt-muted --kt-surface --kt-border --kt-accent --kt-font-metin --kt-font-baslik --kt-font-math --kt-olcek` (light/dark/sepia değerlerini okuyucu verir; `--kt-olcek`'i okuyucu kök `font-size`'a uygular, paket CSS'i kullanmaz) | Tema kuralı gelirse doğrulayıcı `html[data-kt-theme=…]` biçimine çevirip **uyarır**; token yerine sabit renk (`#fff`, `rgb()`, `white`…) **uyarı** (koyu temada bozuk görünebilir) | `KKP-CSS-W3` / `KKP-CSS-W4` |
 | `!important` | > 500 uyarı | `KKP-CSS-W2` |
-| Fontlar | `assets/fonts/*.woff2` + göreli `@font-face`; Google Fonts referansı indirilir, başka dış font red | `KKP-NET-W1` / `KKP-NET-01` |
+| Fontlar | `assets/fonts/*.woff2` + göreli `@font-face`; Google Fonts referansı indirilir, başka dış font red. Yeni üretimde font yalnız Kitappta setinden gelir (`gorunum-ekle` gömer; Plan 35) | `KKP-NET-W1` / `KKP-NET-01` |
 | Üretim meta artığı (`data-source`, `data-legacy-id`, `data-editorial-review`, `data-equation-duplicate-status`, boş `section-marker`) | Uyarı | `KKP-META-W1` |
 | Sınıf önekleri `kt-kabuk-*`, `kt-rt-*` | Rezerve | `KKP-HTML-09` |
 
@@ -251,7 +251,7 @@ ile yeniden yazılması yasak.
 | `KKP-LNK-01/02` | `#hedef` yok (uyarı; dosya adlı `href`'in hedefi çözülemiyorsa da uyarı, bağlantı yeniden yazılmaz) / dosya adlı href (düzeltildi) | id'ye göre bağla |
 | `KKP-JS-01/02/05` | inline script / yasak API / bare import | dosyaya taşı, API'yi kaldır |
 | `KKP-CSS-01..09` | inline style bloğu / yasak seçici-özellik / kapsam dışı | `assets/css/`'e taşı, `.kt-bolum` altına al |
-| `KKP-CSS-W3` / `KKP-CSS-W4` | paket tema kuralı taşıyor (çevrildi) / token yerine sabit renk | tema yazma; `var(--kt-*)` kullan |
+| `KKP-CSS-W3` / `KKP-CSS-W4` | paket tema kuralı taşıyor (çevrildi) / token yerine sabit renk — **Kitappta seti dosyaları hariç** (07.10.2026, Plan 35: `assets/css/set-*.css` sha256 özetinden tanınır, uyarı verilmez, rapora "Kitappta seti: …" yazılır; bir baytı değişen dosya tanınmaz) | tema yazma; `var(--kt-*)` kullan; görünümü `gorunum-ekle` ile setten seç |
 | `KKP-NET-01` / `KKP-NET-W1` | allowlist dışı dış URL (red) / bilinen CDN indirildi (uyarı) | kütüphaneyi `assets/js/vendor/`'a göm ya da bilinen CDN kullan |
 | `KKP-IMG-01` | width/height/alt eksik | dosyadan oku, alt yaz |
 | `KKP-EMB-01` | embed dışı iframe / sandbox yok | `assets/embed/` + `sandbox="allow-scripts"` |

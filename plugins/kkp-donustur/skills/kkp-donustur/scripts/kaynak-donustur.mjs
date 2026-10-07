@@ -18,6 +18,7 @@
 //   4  --onceki: önceki baskının id'leri metin/başlık-yolu/benzerlikle korunur, silinenler emekli (yeniden verilmez), kt-tekrar + bolum css/js taşınır; eşleşme raporu
 // Çıktı: paket dizini (kkp-lint'e hazır) + <cikarim>/donusum-raporu.md|json. Girdi salt okunur.
 import fs from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFragment, serializeOuter } from "parse5";
@@ -128,8 +129,10 @@ const uyar = (m) => rapor.uyarilar.push(m);
 
 // ───────────────────────── Önceki baskı ─────────────────────────
 let onceki = null;
+let oncekiSet = null; // önceki baskının görünüm seçimi (manifest.kitap.uretim.set — gorunum-ekle yazar)
 if (ONCEKI) {
   const man = JSON.parse(fs.readFileSync(path.join(ONCEKI, "manifest.json"), "utf8"));
+  oncekiSet = man.kitap?.uretim?.set ?? null;
   onceki = { bloklar: [], byText: new Map(), sekiller: new Map(), tablolar: new Map(), dipnotlar: [], kutular: new Map(), eqx: new Map(), kartlar: [], tekrar: new Map(), bolumDosya: new Map(), kullanilanEski: new Set(), toplam: 0, metinIdler: new Set() };
   for (const b of man.bolumler) {
     const dosya = path.join(ONCEKI, b.dosya);
@@ -557,7 +560,8 @@ function pIsle(p, ctx, zorla) {
   }
   const ka = kutuAnahtari(t);
   if (ka && !atali(p, (a) => a.tagName === "div" && hasClass(a, "kt-kutu")) && !atali(p, (a) => a.tagName === "li" || a.tagName === "td" || a.tagName === "th" || a.tagName === "blockquote")) {
-    const kutu = eleman("div", { class: "kt-kutu" });
+    // kart ailesi (Plan 35): tür, paragrafın ilk sözcüğünden; etiket o satırın kendisidir (ayrıca etiket paragrafı eklenmez)
+    const kutu = eleman("div", { class: ka.kart ? `kt-kutu kt-kutu--${ka.kart}` : "kt-kutu" });
     let id = ka.anahtar ? eskiIdAl(onceki?.kutular.get(ka.anahtar)) : null;
     if (!id) { id = uret("kutu"); if (onceki) rapor.eslesme.yeni++; }
     say("kutu");
@@ -565,7 +569,7 @@ function pIsle(p, ctx, zorla) {
     insertBefore(p.parentNode, kutu, p);
     append(kutu, p);
     if (ka.anahtar) { if (!kutuMap.has(ka.anahtar)) kutuMap.set(ka.anahtar, id); }
-    rapor.kutular.push(`${ctx.bolum}: ${id} "${kisalt(t, 50)}" — kapsam tek paragraf; devamı varsa kutuya al`);
+    rapor.kutular.push(`${ctx.bolum}: ${id}${ka.kart ? ` [${ka.kart}]` : ""} "${kisalt(t, 50)}" — kapsam tek paragraf; devamı varsa kutuya al`);
   }
   idVer("p", p, ctx);
   isleCocuklar(p, ctx);
@@ -823,6 +827,15 @@ const manifest = {
 fs.writeFileSync(path.join(PAKET, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 if (fs.existsSync(path.join(PAKET, "assets/media")) && !fs.readdirSync(path.join(PAKET, "assets/media")).length) fs.rmdirSync(path.join(PAKET, "assets/media"));
 
+// ── önceki baskının görünümü (Plan 35): aynı seçim GÜNCEL set dosyalarıyla yeniden uygulanır ──
+if (oncekiSet) {
+  const args = [path.join(path.dirname(SABLON), "gorunum-ekle.mjs"), PAKET];
+  for (const [k, v] of Object.entries(oncekiSet)) if (k !== "surum" && typeof v === "string") args.push(`--${k}`, v);
+  const r = spawnSync(process.execPath, args, { encoding: "utf8" });
+  if (r.status === 0) rapor.gorunum = r.stdout.trim();
+  else uyar(`Önceki baskının görünümü uygulanamadı (${(r.stderr || "").trim().split(/\r?\n/).slice(0, 3).join(" · ")}) — gorunum-ekle ile yeniden seç`);
+}
+
 // ── ses sözlüğü taslağı (Görev A11, Plan 28) — hiç [Okunuş: …] işareti yoksa dosya hiç yazılmaz ──
 if (Object.keys(sesSozlukGirdileri).length) {
   const sozlukTaslak = { format: "kkp-ses-sozluk/1", surum: 1, girdiler: sesSozlukGirdileri, notlar: sesSozlukNotlar };
@@ -848,6 +861,7 @@ for (const g of rapor.gorseller.altEksik) md.push(`- alt: ${g}`);
 md.push("", "## Etkileşim istekleri (kural 11 — kart/embed olarak gerçekle, kutuyu sil)", "", ...(rapor.etkilesimIstekleri.length ? rapor.etkilesimIstekleri.map((k) => `- ${k}`) : ["- (yok)"]));
 md.push("", `## Okunuş satırları: ${rapor.okunusSatirlari.length}`, "", ...(rapor.okunusSatirlari.length ? rapor.okunusSatirlari.map((k) => `- ${k}`) : ["- (yok)"]));
 md.push("", "## Kutu adayları (kapsamı gözden geçir)", "", ...(rapor.kutular.length ? rapor.kutular.map((k) => `- ${k}`) : ["- (yok)"]));
+if (rapor.gorunum) md.push("", "## Görünüm (önceki baskıdan)", "", rapor.gorunum);
 md.push("", "## Çapraz anmalar", "", `kurulan link ${rapor.linkler.kurulan} · iç link yeniden yazılan ${rapor.linkler.icLink.yeniden}`);
 if (rapor.linkler.cozulemeyen.length) { const say_ = new Map(); for (const c of rapor.linkler.cozulemeyen) say_.set(c, (say_.get(c) ?? 0) + 1); for (const [c, n] of say_) md.push(`- çözülemeyen (düz metin bırakıldı): ${c}${n > 1 ? ` ×${n}` : ""}`); }
 for (const c of rapor.linkler.icLink.cozulemeyen) md.push(`- iç link hedefi yok (link kaldırıldı): ${c}`);

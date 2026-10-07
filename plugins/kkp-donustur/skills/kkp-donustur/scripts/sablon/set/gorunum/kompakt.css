@@ -1,0 +1,9 @@
+/* Kitappta seti — görünüm: Kompakt (scripts/kkp/sablon/set/gorunum/kompakt.css). Küçük punto, dar başlık boşlukları; kutu etiketi ilk paragrafla aynı
+   satırda. Özet ve sınav kitabı. */
+.kt-bolum{--kitap-olcu:52rem;--kitap-punto:.95rem}
+.kt-bolum h1,.kt-bolum h2,.kt-bolum h3,.kt-bolum h4{margin:1.3em 0 .4em}
+.kt-bolum h1{margin-top:.3em}
+.kt-bolum .kt-kutu,.kt-bolum .kt-kart{margin:.9em 0}
+.kt-bolum .kt-kutu-etiket{display:inline;margin-inline-end:.5em}
+.kt-bolum .kt-kutu-etiket+p{display:inline}
+.kt-bolum .kt-kutu-etiket+p:not(:last-child)::after{content:"";display:block;margin-bottom:var(--kitap-aralik,1em)}
